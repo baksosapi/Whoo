@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Whoo.iml" filepath="$PROJECT_DIR$/Whoo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opencv/sdk/java/java.iml" filepath="$PROJECT_DIR$/opencv/sdk/java/java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opencv/opencv.iml" filepath="$PROJECT_DIR$/opencv/opencv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opencv/sdk/sdk.iml" filepath="$PROJECT_DIR$/opencv/sdk/sdk.iml" />
+    </modules>
+  </component>
+</project>

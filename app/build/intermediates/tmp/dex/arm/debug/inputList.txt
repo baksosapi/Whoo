@@ -1,0 +1,4 @@
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/classes/arm/debug
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-155079217025ac94e1884ad6d523eab0998b3a0c.jar
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-39828891dd718d88150b3bfbd02c2638ab82e404.jar
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/arm/debug/support-v4-19.1.0-2fcdaa14502de78b27d4b895603aa741eef298fa.jar
