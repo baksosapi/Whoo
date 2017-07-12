@@ -26,14 +26,19 @@ import com.lamar.cs.whoo.WhooConfig;
 import com.lamar.cs.whoo.WhooTools;
 
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfKeyPoint;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
 
@@ -126,21 +131,53 @@ public class LandingPage extends Activity {
 //        Intent intent = new Intent(LandingPage.this, ImageLoad.class);
 //        startActivity(intent);
 
-        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
-        Log.e(TAG, "loadFile: "+ folderLocation );
+//        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
+        folderLocation = "/storage/emulated/0/Download/lena.png";
 
         File imgFile = new File(folderLocation);
+
         if (imgFile.exists()){
-            Log.e(TAG, "loadFile: "+"Exist" );
-//            Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+            Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 //            ImageView imageView = (ImageView) findViewById(R.id.imgDisp);
 //            Log.e(TAG, "loadFile: "+ bitmap );
 //            imgDisp.setImageBitmap(bitmap);
 
+            // Init detector
+//            CascadeClassifier faceDetector = new CascadeClassifier(getClass().getResource("/res/raw/lbpcascade_frontalface.xml").getPath());
+            CascadeClassifier faceDetector = new CascadeClassifier(getClass().getResource("/res/raw/haarcascade_frontalface_alt.xml").getPath());
+
+            Log.e(TAG, "loadFile: "+"facedetector "+ faceDetector );
+
             // Proses Image
-            img1 = new Mat();
-            Mat matx = Highgui.imread(folderLocation);
+//            img1 = new Mat();
+            Mat image = Highgui.imread(folderLocation);
+
             MatOfRect faceDetection = new MatOfRect();
+            faceDetector.detectMultiScale(image, faceDetection);
+
+            Log.e(TAG, String.format("loadFile: "+"Detected %s faces", faceDetection.toArray().length ));
+
+            String filename= folderLocation.substring(folderLocation.lastIndexOf("/")+1);
+
+            for (Rect rect : faceDetection.toArray()){
+                Log.e(TAG, "loadFile: "+1 );
+                Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+                Boolean bool = null;
+                bool = Highgui.imwrite(filename, image);
+
+                if (bool)
+                    Log.e(TAG, "loadFile: "+ "SUCCESS writing image to external storage" );
+                else
+                    Log.e(TAG, "Fail writing image to external storage");
+
+                String newfilename = "faceDetection.png";
+                System.out.println(String.format("Writing %s", newfilename));
+//                imwrite(newfilename, image);
+//                Highgui.imwrite(newfilename, )
+
+            }
+            imgDisp.setImageBitmap(bitmap);
 
 //            Utils.bitmapToMat(bitmap, img1);
 //            Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGB2GRAY);
@@ -154,7 +191,7 @@ public class LandingPage extends Activity {
 
 //            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
 //            String result = wfr.getResult();
-            String filename= folderLocation.substring(folderLocation.lastIndexOf("/")+1);
+
 
 //            if (result != null && !result.equalsIgnoreCase("Unknown")) {
 //                input.setCompletionHint(result);
@@ -253,5 +290,24 @@ public class LandingPage extends Activity {
             tvLoc.setText(folderLocation);
 
         }
+    }
+
+    public void SaveImage (Mat mat) {
+        Mat mIntermediateMat = new Mat();
+
+//        Imgproc.cvtColor(mRgba, mIntermediateMat, Imgproc.COLOR_RGBA2BGR, 3);
+
+        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String filename = "barry.png";
+        File file = new File(path, filename);
+
+        Boolean bool = null;
+        filename = file.toString();
+        bool = Highgui.imwrite(filename, mIntermediateMat);
+
+        if (bool == true)
+            Log.d(TAG, "SUCCESS writing image to external storage");
+        else
+            Log.d(TAG, "Fail writing image to external storage");
     }
 }

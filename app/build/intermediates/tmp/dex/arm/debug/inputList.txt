@@ -1,4 +1,4 @@
-/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/classes/arm/debug
-/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-eef4dadaa22f41eb17cf8f71d41ccd943f069cac.jar
-/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-f95329ef2465325e3273d2fc3286377c850f6370.jar
-/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/pre-dexed/arm/debug/support-v4-19.1.0-4b9ca077393c328ce97e9bbc4237579a1ae74591.jar
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/classes/arm/debug
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-155079217025ac94e1884ad6d523eab0998b3a0c.jar
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-39828891dd718d88150b3bfbd02c2638ab82e404.jar
+/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/arm/debug/support-v4-19.1.0-2fcdaa14502de78b27d4b895603aa741eef298fa.jar
