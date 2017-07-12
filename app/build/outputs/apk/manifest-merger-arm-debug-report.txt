@@ -88,22 +88,26 @@ uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
 ADDED from AndroidManifest.xml:44:2
 	android:name
 		ADDED from AndroidManifest.xml:44:19
-uses-permission#android.permission.ACCESS_WIFI_STATE
-ADDED from AndroidManifest.xml:45:2
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from AndroidManifest.xml:45:5
 	android:name
-		ADDED from AndroidManifest.xml:45:19
-uses-permission#android.permission.INTERNET
+		ADDED from AndroidManifest.xml:45:22
+uses-permission#android.permission.ACCESS_WIFI_STATE
 ADDED from AndroidManifest.xml:46:2
 	android:name
 		ADDED from AndroidManifest.xml:46:19
-uses-feature#android.hardware.camera
+uses-permission#android.permission.INTERNET
 ADDED from AndroidManifest.xml:47:2
 	android:name
-		ADDED from AndroidManifest.xml:47:16
-uses-feature#android.hardware.camera.autofocus
+		ADDED from AndroidManifest.xml:47:19
+uses-feature#android.hardware.camera
 ADDED from AndroidManifest.xml:48:2
 	android:name
 		ADDED from AndroidManifest.xml:48:16
+uses-feature#android.hardware.camera.autofocus
+ADDED from AndroidManifest.xml:49:2
+	android:name
+		ADDED from AndroidManifest.xml:49:16
 activity#lib.folderpicker.FolderPicker
 ADDED from lib.kashif:folderpicker:2.2:15:9
 	android:screenOrientation

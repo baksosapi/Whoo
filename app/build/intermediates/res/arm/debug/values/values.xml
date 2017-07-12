@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/array.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/values/array.xml -->
     <eat-comment/>
     <string-array name="algoindex">
 	    <item>0</item>
@@ -12,7 +12,7 @@
 	    <item>Fisherfaces</item>
 	    <item>LBPH</item>
 	</string-array>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
     <eat-comment/>
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimary">#3F51B5</color>
@@ -20,45 +20,45 @@
     <declare-styleable name="CameraBridgeViewBase"><attr format="boolean" name="show_fps"/><attr format="integer" name="camera_id"><enum name="any" value="-1"/><enum name="back" value="99"/><enum name="front" value="98"/></attr></declare-styleable>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/color.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/values/color.xml -->
     <eat-comment/>
     <drawable name="darkgray">#FF808080</drawable>
     <drawable name="overlap_transparent">#40BBBBBB</drawable>
     <drawable name="semi_transparent">#C0444444</drawable>
     <drawable name="transparent">#00000000</drawable>
     <drawable name="white">#FFEEEEEE</drawable>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
     <eat-comment/>
     <string name="allow_storage_permission">Allow permissions to view files</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="app_name">Whoo</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
     <eat-comment/>
     <string name="cancel">Cancel</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="capture">Capture</string>
     <string name="default_algoindex">2</string>
     <string name="default_serverip">192.168.111.111</string>
     <string name="helpinfo">The viewfinder below can help you take a head photo</string>
     <string name="imgDesc">Image Description</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
     <eat-comment/>
     <string name="location">Location</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="main_title">Whoo: Photo..</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
     <eat-comment/>
     <string name="neww">New</string>
     <string name="select">Select</string>
     <string name="title">Select Folder</string>
     <string name="up">Up</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/strings.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="upload">Upload</string>
-    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/styles.xml -->
+    <!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppBaseTheme" parent="android:Theme.Light">
         <!--

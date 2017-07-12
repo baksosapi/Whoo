@@ -2,14 +2,40 @@ package sid;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.InputType;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
+import com.lamar.cs.whoo.FaceActivity;
+import com.lamar.cs.whoo.FaceDetector;
+import com.lamar.cs.whoo.LocalNameList;
 import com.lamar.cs.whoo.MainActivity2;
 import com.lamar.cs.whoo.R;
+import com.lamar.cs.whoo.WFRDataFactory;
+import com.lamar.cs.whoo.WFRPerson;
+import com.lamar.cs.whoo.WFaceRecognizer;
+import com.lamar.cs.whoo.WhooConfig;
+import com.lamar.cs.whoo.WhooTools;
+
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.MatOfRect;
+import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.DescriptorMatcher;
+import org.opencv.features2d.FeatureDetector;
+import org.opencv.highgui.Highgui;
+import org.opencv.imgproc.Imgproc;
+
+import java.io.File;
 
 import lib.folderpicker.FolderPicker;
 
@@ -19,18 +45,59 @@ import lib.folderpicker.FolderPicker;
 
 public class LandingPage extends Activity {
 
-    private static final int FOLDERPICKER_CODE = 78;
+    private static final int FOLDER_PICKER_CODE = 78;
     private static final int FILE_PICKER_CODE = 786;
+    private static final String TAG = LandingPage.class.getSimpleName();
     EditText dirLoc;
+    TextView tvLoc;
+    ImageView imgDisp;
+    RadioButton rbDir, rbFile, rbEigen, rbFisher, rbLbph;
+    RadioGroup rbgType, rbgAlg;
+    private int chooseType;
+    private String folderLocation;
+    Mat descriptors2,descriptors1;
+    Mat img1;
+    MatOfKeyPoint keypoints1,keypoints2;
+    FeatureDetector detector;
+    DescriptorExtractor descriptor;
+    DescriptorMatcher matcher;
+
     @Override
     protected void onCreate(Bundle savedInstanceBundle){
         super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_landing);
 
-        dirLoc = (EditText) findViewById(R.id.editText);
+//        dirLoc = (EditText) findViewById(R.id.editText);
+        rbDir = (RadioButton) findViewById(R.id.rbDir);
+        rbFile = (RadioButton) findViewById(R.id.rbFile);
+        rbEigen = (RadioButton) findViewById(R.id.rb_eigen);
+        rbFisher = (RadioButton) findViewById(R.id.rb_fisher);
+        rbLbph = (RadioButton) findViewById(R.id.rb_lbph);
 
-        dirLoc.setInputType(InputType.TYPE_NULL);
-        dirLoc.setKeyListener(null);
+        rbgType = (RadioGroup) findViewById(R.id.rbgType);
+        rbgAlg = (RadioGroup) findViewById(R.id.rbgAlg);
+
+        tvLoc = (TextView) findViewById(R.id.tvLoc);
+
+        imgDisp = (ImageView) findViewById(R.id.imgDisp);
+//        dirLoc.setInputType(InputType.TYPE_NULL);
+//        dirLoc.setKeyListener(null);
+
+        rbgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                Log.e(TAG, "onCheckedChanged: "+ checkedId);
+                if (checkedId == R.id.rbDir){
+                    Log.e(TAG, "onCheckedChanged: "+ "Directory" );
+                    chooseType = 1;
+                } else if (checkedId == R.id.rbFile){
+                    Log.e(TAG, "onCheckedChanged: "+ "File" );
+                    chooseType = 0;
+                }
+            }
+        });
+
+        tvLoc.setText("No Location selected");
     }
 
     @Override
@@ -53,28 +120,137 @@ public class LandingPage extends Activity {
         Intent intent = new Intent(LandingPage.this, MainActivity2.class);
         startActivity(intent);
 
-
     }
 
     public void loadFile(View view) {
-        Intent intent = new Intent(LandingPage.this, ImageLoad.class);
-        startActivity(intent);
+//        Intent intent = new Intent(LandingPage.this, ImageLoad.class);
+//        startActivity(intent);
+
+        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
+        Log.e(TAG, "loadFile: "+ folderLocation );
+
+        File imgFile = new File(folderLocation);
+        if (imgFile.exists()){
+            Log.e(TAG, "loadFile: "+"Exist" );
+//            Bitmap bitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+//            ImageView imageView = (ImageView) findViewById(R.id.imgDisp);
+//            Log.e(TAG, "loadFile: "+ bitmap );
+//            imgDisp.setImageBitmap(bitmap);
+
+            // Proses Image
+            img1 = new Mat();
+            Mat matx = Highgui.imread(folderLocation);
+            MatOfRect faceDetection = new MatOfRect();
+
+//            Utils.bitmapToMat(bitmap, img1);
+//            Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGB2GRAY);
+//            img1.convertTo(img1, 0);
+//            descriptors1 = new Mat();
+//            keypoints1 = new MatOfKeyPoint();
+//            detector.detect(img1, keypoints1);
+//            descriptor.compute(img1, keypoints1, descriptors1);
+//            FaceDetector fd = FaceDetector.getInstance();
+//            Mat mat = fd.getDetectedFace();
+
+//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+//            String result = wfr.getResult();
+            String filename= folderLocation.substring(folderLocation.lastIndexOf("/")+1);
+
+//            if (result != null && !result.equalsIgnoreCase("Unknown")) {
+//                input.setCompletionHint(result);
+//                input.setText(result);
+//                Log.e(TAG, "loadFile: "+ filename );
+//            }
+
+
+//            FaceDetector fd = FaceDetector.getInstance();
+//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+//            WFRDataFactory factory = WFRDataFactory.getInstance();
+
+            LocalNameList lnlist = LocalNameList.getInstance();
+
+            String instr = filename;
+            lnlist.inputLocalName(instr);
+            int index = lnlist.findExistNameLocation(instr);
+            if (-1 == index) {
+                Log.e(TAG, "WRONG NAME, WHY?");
+                WhooConfig.DBG(LandingPage.this, "WRONG NAME, WHY?");
+                return;
+            }
+
+            String name = lnlist.getLocalName(index);
+
+//            WFRPerson person = factory.addPerson(name);
+//            if (null == person) {
+//                Log.e(TAG, "Add Person Failed, WHY?");
+//                WhooConfig.DBG(LandingPage.this, "Add Person Failed, WHY?");
+//                return;
+//            }
+
+//            Mat mmat = fd.getDetectedFace();
+//            Log.e(TAG, "loadFile: mmat "+mmat );
+//            assert (mmat != null);
+            // resize the image to normalized size.
+//            mmat = WhooTools.resize(mmat);
+
+//            boolean ret = person.addFaceImage(mmat);
+//            boolean ret = person.addFaceImage(mat);
+//            if (!ret) {
+//                Log.e(TAG, "Add Image Failed, WHY?");
+//                WhooConfig.DBG(LandingPage.this, "Add Image Failed, WHY?");
+//                return;
+//            } else {
+//                WhooConfig.DBG(LandingPage.this, "A face image added for " + name + " !");
+//            }
+
+            // call FR.train() now, maybe it will run later on.
+//            wfr.train();
+
+            // let the faceActivity exit
+//            LandingPage.this.finish();
+
+
+        } else {
+            Log.e(TAG, "loadFile: "+"Nof found" );
+        }
+
 
     }
 
     public void setLocation(View view) {
+        int picker_code = 100;
+
+        Log.e(TAG, "setLocation: "+ chooseType );
         Intent intent = new Intent(this, FolderPicker.class);
-//        startActivityForResult(intent, FILE_PICKER_CODE);
-        startActivityForResult(intent, FOLDERPICKER_CODE);
+//        startActivityForResult(intent, FOLDER_PICKER_CODE);
+
+        if (chooseType == 1){
+            startActivityForResult(intent, FOLDER_PICKER_CODE);
+        } else if (chooseType == 0){
+            intent.putExtra("title", "Select file to upload");
+            intent.putExtra("location", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
+            intent.putExtra("pickFiles", true);
+            startActivityForResult(intent, FILE_PICKER_CODE);
+//
+        }
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == FOLDERPICKER_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == FOLDER_PICKER_CODE && resultCode == Activity.RESULT_OK) {
 
-            String folderLocation = intent.getExtras().getString("data");
+            Log.e(TAG, "onActivityResult: "+ intent );
+            folderLocation = intent.getExtras().getString("data");
             Log.i( "folderLocation", folderLocation );
 
-            dirLoc.setText(folderLocation);
+            tvLoc.setText(folderLocation);
+
+        } else if (requestCode == FILE_PICKER_CODE && resultCode == Activity.RESULT_OK){
+            Log.e(TAG, "onActivityResult: "+ intent );
+            folderLocation = intent.getExtras().getString("data");
+            Log.i( "folderLocation", folderLocation );
+
+            tvLoc.setText(folderLocation);
 
         }
     }

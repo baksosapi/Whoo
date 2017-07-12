@@ -43,33 +43,61 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Directory"
+            android:text="Type"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="match_parent"
+        <RadioGroup
+            android:id="@+id/rbgType"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/textView4"
-            android:layout_alignStart="@+id/textView4"
-            android:layout_alignTop="@+id/button2"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="25dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text=""
+            android:orientation="horizontal"
+            >
+            <RadioButton
+                android:id="@+id/rbDir"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Directory"/>
 
+            <RadioButton
+                android:id="@+id/rbFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="File"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvLoc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
             android:onClick="setLocation"
             />
+
+        <!--<EditText-->
+            <!--android:id="@+id/editText"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignLeft="@+id/textView4"-->
+            <!--android:layout_alignStart="@+id/textView4"-->
+            <!--android:layout_alignTop="@+id/button2"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_marginStart="20dp"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:ems="10"-->
+            <!--android:inputType="textPersonName"-->
+            <!--android:text=""-->
+            <!--android:onClick="setLocation"-->
+            <!--/>-->
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Algoritma"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginTop="25dp"/>
 
         <RadioGroup
+            android:id="@+id/rbgAlg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
@@ -105,4 +133,14 @@
         android:layout_below="@+id/button"
         android:id="@+id/textView4" />
 
-</RelativeLayout><!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/layout/activity_landing.xml -->
+    <ImageView
+        android:id="@+id/imgDisp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        />
+
+
+</RelativeLayout><!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/layout/activity_landing.xml -->

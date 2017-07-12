@@ -2,25 +2,25 @@
 <items version="2" >
 
     <item
-        jar="/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/Whoo.opencv.sdk/java/unspecified/classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="7c7176f63650f53355dd7c8bcc093a43d78c9fba">
-        <dex dex="/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/x86/debug/classes-39828891dd718d88150b3bfbd02c2638ab82e404.jar" />
-    </item>
-    <item
-        jar="/home/sid/Android/Sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
-        <dex dex="/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/x86/debug/support-v4-19.1.0-2fcdaa14502de78b27d4b895603aa741eef298fa.jar" />
-    </item>
-    <item
-        jar="/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/classes.jar"
+        jar="/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="3f35304ecd7e04a42f9499a4151693cb80990660">
-        <dex dex="/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-155079217025ac94e1884ad6d523eab0998b3a0c.jar" />
+        <dex dex="/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-eef4dadaa22f41eb17cf8f71d41ccd943f069cac.jar" />
+    </item>
+    <item
+        jar="/Users/wildan/Library/Android/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/pre-dexed/arm/debug/support-v4-19.1.0-4b9ca077393c328ce97e9bbc4237579a1ae74591.jar" />
+    </item>
+    <item
+        jar="/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/exploded-aar/Whoo.opencv.sdk/java/unspecified/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="ca3c908c9213b90fd89dada7fdceb435f05946c4">
+        <dex dex="/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/build/intermediates/pre-dexed/arm/debug/classes-f95329ef2465325e3273d2fc3286377c850f6370.jar" />
     </item>
 
 </items>

@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/androidTest/assets"/></dataSet><dataSet config="arm"><source path="/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/androidTestArm/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/androidTest/assets"/></dataSet><dataSet config="arm"><source path="/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/androidTestArm/assets"/></dataSet></merger>
