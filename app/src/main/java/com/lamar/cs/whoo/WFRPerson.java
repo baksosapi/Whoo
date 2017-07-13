@@ -148,10 +148,10 @@ public class WFRPerson {
     }
 
     public boolean addFaceImage(Mat mat) {
-        WFRFaceImage image = null;
-        String path = null;
+        WFRFaceImage image;
+        String path;
         File file = null;
-        File dir = null;
+        File dir;
 
         if (WhooConfig.USING_EXTERNAL_STORAGE) {
             dir = Environment.getExternalStorageDirectory();

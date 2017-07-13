@@ -252,6 +252,10 @@ public class WFaceRecognizer {
         mView = view;
     }
 
+    public void onDrawView(Canvas canvas, Mat face) {
+
+    }
+
     public void onDrawView(Canvas canvas) {
         //
         // so, the current version places predict() in the main thread. and

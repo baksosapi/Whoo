@@ -228,6 +228,8 @@ public class FaceDetector {
         //
         // exceptions if any.
         //
+        Log.e(TAG, "onDrawView: YUVdata "+ mYUVData );
+        Log.e(TAG, "onDrawView: isLock "+ mIsLocked );
         if (null == mYUVData || mIsLocked)
             return;
         if (null == mDetector)
@@ -236,6 +238,7 @@ public class FaceDetector {
         synchronized (this) {
             //Log.d(TAG, "fd.onDraw(1): h=" + mHeight + ",w=" + mWidth);
             mImageGray = mYUVData.submat(0, mHeight, 0, mWidth);
+            Log.e(TAG, "onDrawView: "+ mImageGray );
             //Log.d(TAG, "fd.onDraw(2): h=" + mImageGray.height() + ",w=" + mImageGray.width());
             
             //

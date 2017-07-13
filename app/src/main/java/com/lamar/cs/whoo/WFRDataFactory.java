@@ -100,6 +100,7 @@ public class WFRDataFactory {
                     fis = new FileInputStream(file);
                 }
             } else {
+                Log.e(TAG, "load: "+"Use SDCARD" );
                 fis = mContext.openFileInput(FILE_PERSONS);
             }
 
@@ -194,7 +195,7 @@ public class WFRDataFactory {
         }
 
         if (0 == count || (mPersons.size() > count/2)) {
-            Log.d(TAG, "checked, dm good.");
+            Log.d(TAG, "checked, dm good. Number Person = "+ mPersons.size() );
             return;
         }
 

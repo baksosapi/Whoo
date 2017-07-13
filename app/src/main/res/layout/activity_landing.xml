@@ -43,8 +43,33 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Type"
+            android:text="Mode"
             android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/rbgMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <RadioButton
+                android:id="@+id/rbAdd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Records"/>
+
+            <RadioButton
+                android:id="@+id/rbCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recognize"/>
+        </RadioGroup>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Type"
+            android:textStyle="bold"
+            />
 
         <RadioGroup
             android:id="@+id/rbgType"

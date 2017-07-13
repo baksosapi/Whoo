@@ -26,15 +26,15 @@ public final class R {
 		public static final int outline_black_1dp = 0x7f02001a;
 	}
 	public static final class id {
-		public static final int fp_btn_new = 0x7f0b0025;
-		public static final int fp_btn_select = 0x7f0b0026;
-		public static final int fp_buttonsLayout = 0x7f0b0024;
-		public static final int fp_iv_icon = 0x7f0b001f;
-		public static final int fp_listView = 0x7f0b0027;
-		public static final int fp_tv_location = 0x7f0b0023;
-		public static final int fp_tv_name = 0x7f0b0020;
-		public static final int fp_tv_title = 0x7f0b0022;
-		public static final int iv_icon = 0x7f0b0021;
+		public static final int fp_btn_new = 0x7f0b0028;
+		public static final int fp_btn_select = 0x7f0b0029;
+		public static final int fp_buttonsLayout = 0x7f0b0027;
+		public static final int fp_iv_icon = 0x7f0b0022;
+		public static final int fp_listView = 0x7f0b002a;
+		public static final int fp_tv_location = 0x7f0b0026;
+		public static final int fp_tv_name = 0x7f0b0023;
+		public static final int fp_tv_title = 0x7f0b0025;
+		public static final int iv_icon = 0x7f0b0024;
 	}
 	public static final class layout {
 		public static final int filerow = 0x7f030008;

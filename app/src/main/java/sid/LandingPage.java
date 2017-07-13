@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -22,12 +24,14 @@ import com.lamar.cs.whoo.LocalNameList;
 import com.lamar.cs.whoo.MainActivity2;
 import com.lamar.cs.whoo.R;
 import com.lamar.cs.whoo.WFRDataFactory;
+import com.lamar.cs.whoo.WFRFaceImage;
 import com.lamar.cs.whoo.WFRPerson;
 import com.lamar.cs.whoo.WFaceRecognizer;
 import com.lamar.cs.whoo.WhooConfig;
 import com.lamar.cs.whoo.WhooTools;
 
 import org.opencv.android.Utils;
+import org.opencv.contrib.FaceRecognizer;
 import org.opencv.core.Core;
 import org.opencv.core.CvException;
 import org.opencv.core.CvType;
@@ -45,6 +49,8 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.Vector;
 
 import lib.folderpicker.FolderPicker;
 
@@ -79,6 +85,9 @@ public class LandingPage extends Activity {
     private String afilename;
     DrawView mTargetView;
     private Bitmap mutableBitmap, mutableBitmapFace;
+    private String filename;
+//    private FaceRecognizer mReadable;
+    private String mPredictResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle){
@@ -153,165 +162,159 @@ public class LandingPage extends Activity {
         File imgFile = new File(folderLocation);
 
         if (imgFile.exists()){
+            FaceDetector fd = FaceDetector.getInstance();
 
             // Init detector Proses Image
-            image = Highgui.imread(folderLocation);
-            String mCascadeFileName = "lppcascade.xml";
 
-            File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
-            File mCascadeFile = new File(cascadeDir, mCascadeFileName);
-            CascadeClassifier mDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inScaled = false;
+            options.inMutable = true;
+            Bitmap b = BitmapFactory.decodeFile(folderLocation, options);
 
-            MatOfRect faceDetection = new MatOfRect();
-            mDetector.detectMultiScale(image, faceDetection);
+            Canvas c = new Canvas(b);
+            fd.lock();
+            fd.onDrawView(c);
 
-            Log.e(TAG, String.format("loadFile: "+"Detected %s faces", faceDetection.toArray().length ));
+//            onDrawView: YUVdata Mat [ 1620*1920*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xfffffffff4b07f28, dataAddr=0xffffffffdad40010 ]
+//            onDrawView: YUVdata Mat [ 0*0*CV_8UC1, isCont=false, isSubmat=false, nativeObj=0xfffffffff4b07d68, dataAddr=0x0 ] --> File
+            Mat mat = fd.getDetectedFaceForDisplaying();
+            Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(mat, bitmap);
+            imgDisp.setImageBitmap(bitmap);
 
-            // Get Name of file
-            String filename = new File(folderLocation).getName();
-            int pos = filename.lastIndexOf(".");
-            if (pos > 0) {
-                filename = filename.substring(0, pos);
-            }
-            Log.e(TAG, "loadFile: "+ filename );
-
-            mDetectedFace = new Mat();
-            Rect[] faces = faceDetection.toArray();
-
-            int i = 0;
-            for (Rect rect : faces){
-                Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-
-                mDetectedFace = image.submat(
-                        faces[i].y,
-                        faces[i].y + faces[i].height,
-                        faces[i].x,
-                        faces[i].x + faces[i].width
-                        );
-                i++;
-                // Save to local file
-//                SaveImage(image);
+            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+            String result = wfr.getResult();
+            if (result != null) {
+                TextView textView = (TextView) findViewById(R.id.textview_person);
+                if (result.equals("Unknown")) {
+                    textView.setText("Sorry, unknown");
+                } else {
+                    textView.setText(result + " (" + (int)wfr.getConfidence() + ")");
+                }
             }
 
-            Log.e(TAG, "loadFile: "+ mDetectedFace.toString() );
-//            ShowImage();
+//            processPhoto();
 
-            Mat tmp = new Mat (image.height(), image.width(), CvType.CV_8U, new Scalar(4));
-            Mat tmpfaces = new Mat (image.height(), image.width(), CvType.CV_8U, new Scalar(4));
-            try {
-                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2BGRA);
-                Imgproc.cvtColor(mDetectedFace, tmpfaces, Imgproc.COLOR_RGB2BGRA);
-//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2GRAY);
-//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
+            // Recognize
+//            WFRDataFactory wdf = WFRDataFactory.getInstance();
+//            Vector<WFRFaceImage> images = wdf.getFaceImages();
 
-                mutableBitmap = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
-                mutableBitmapFace = Bitmap.createBitmap(tmpfaces.cols(), tmpfaces.rows(), Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(tmp, mutableBitmap);
-                Utils.matToBitmap(tmpfaces, mutableBitmapFace);
-
-            } catch (CvException e){
-                Log.d("Exception",e.getMessage());
-            }
-            imgDisp.setImageBitmap(mutableBitmap);
-            imgFace.setImageBitmap(mutableBitmapFace);
-            tvFace.setText(filename);
-//            processImage();
-
-            Toast.makeText(getApplicationContext(), "Load File Success : "+filename, Toast.LENGTH_SHORT).show();
-
-//            Utils.bitmapToMat(bitmap, img1);
-//            Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGB2GRAY);
-//            img1.convertTo(img1, 0);
-//            descriptors1 = new Mat();
-//            keypoints1 = new MatOfKeyPoint();
-//            detector.detect(img1, keypoints1);
-//            descriptor.compute(img1, keypoints1, descriptors1);
-//            FaceDetector fd = FaceDetector.getInstance();
-//            Mat mat = fd.getDetectedFace();
-
-//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
-//            String result = wfr.getResult();
-
-
-//            if (result != null && !result.equalsIgnoreCase("Unknown")) {
-//                input.setCompletionHint(result);
-//                input.setText(result);
-//                Log.e(TAG, "loadFile: "+ filename );
-//            }
-
-
-//            FaceDetector fd = FaceDetector.getInstance();
-//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
-//            WFRDataFactory factory = WFRDataFactory.getInstance();
-
-//            LocalNameList lnlist = LocalNameList.getInstance();
+//            int[] label = new int[1];
+//            double[] confidence = new double[1];
 //
-//            String instr = filename;
-//            lnlist.inputLocalName(instr);
-//            int index = lnlist.findExistNameLocation(instr);
-//            if (-1 == index) {
-//                Log.e(TAG, "WRONG NAME, WHY?");
-//                WhooConfig.DBG(LandingPage.this, "WRONG NAME, WHY?");
-//                return;
-//            }
-
-//            String name = lnlist.getLocalName(index);
-
-//            WFRPerson person = factory.addPerson(name);
-//            if (null == person) {
-//                Log.e(TAG, "Add Person Failed, WHY?");
-//                WhooConfig.DBG(LandingPage.this, "Add Person Failed, WHY?");
-//                return;
-//            }
-
-//            Mat mmat = fd.getDetectedFace();
-//            Log.e(TAG, "loadFile: mmat "+mmat );
-//            assert (mmat != null);
-            // resize the image to normalized size.
-//            mmat = WhooTools.resize(mmat);
-
-//            boolean ret = person.addFaceImage(mmat);
-//            boolean ret = person.addFaceImage(mat);
-//            if (!ret) {
-//                Log.e(TAG, "Add Image Failed, WHY?");
-//                WhooConfig.DBG(LandingPage.this, "Add Image Failed, WHY?");
-//                return;
+//            if (null == mReadable) {
+//                Log.e(TAG, "this.mReadable is not ready.");
+//                mPredictResult = null;
+////                return false;
 //            } else {
-//                WhooConfig.DBG(LandingPage.this, "A face image added for " + name + " !");
+//                Log.d(TAG, "call opencv.predict():");
+//                mReadable.predict(mDetectedFace, label, confidence);
+//                Log.d(TAG, "opencv.predict() returned, label[0]=" + label[0]);
+//
 //            }
 
-            // call FR.train() now, maybe it will run later on.
-//            wfr.train();
 
-            // let the faceActivity exit
-//            LandingPage.this.finish();
+//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+//            wfr.onDrawView(null, mDetectedFace);
+//            String result = wfr.getResult();
+//            Log.e(TAG, "loadFile: "+ result );
+//            if (result != null) {
+//
+//                TextView textView = (TextView) findViewById(R.id.textview_person);
+//                if (result.equals("Unknown")) {
+//
+//                     Add record
+//
+//                     processImage();
+//                    textView.setText("Sorry, unknown");
+//                } else {
+//                    textView.setText(result + " (" + (int)wfr.getConfidence() + ")");
+//                }
+//            }
 
+//            Toast.makeText(getApplicationContext(), "Load File Success : "+filename, Toast.LENGTH_SHORT).show();
 
         } else {
-            Log.e(TAG, "loadFile: "+"Nof found" );
+            Log.e(TAG, "loadFile: "+"Image Not found" );
         }
 
 
     }
 
-    private void ShowImage() {
-        File aImg = new  File(afilename);
-        Bitmap myBitmap = BitmapFactory.decodeFile(aImg.getAbsolutePath());
+    private void processPhoto() {
+        image = Highgui.imread(folderLocation);
+        String mCascadeFileName = "lppcascade.xml";
 
-//            imgDisp.setImageBitmap(myBitmap);
+        File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
+        File mCascadeFile = new File(cascadeDir, mCascadeFileName);
+        CascadeClassifier mDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
 
+        MatOfRect faceDetection = new MatOfRect();
+        mDetector.detectMultiScale(image, faceDetection);
+
+        Log.e(TAG, String.format("loadFile: "+"Detected %s faces", faceDetection.toArray().length ));
+
+        // Get Name of file
+        filename = new File(folderLocation).getName();
+        int pos = filename.lastIndexOf(".");
+        if (pos > 0) {
+            filename = filename.substring(0, pos);
+        }
+        Log.e(TAG, "loadFile: "+ filename );
+
+        mDetectedFace = new Mat();
+        Rect[] faces = faceDetection.toArray();
+
+        int i = 0;
+        for (Rect rect : faces){
+            Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+
+            mDetectedFace = image.submat(
+                    faces[i].y,
+                    faces[i].y + faces[i].height,
+                    faces[i].x,
+                    faces[i].x + faces[i].width
+            );
+            i++;
+            // Save to local file
+//                SaveImage(image);
+        }
+
+        Log.e(TAG, "loadFile: "+ mDetectedFace.toString() );
+//            ShowImage();
+
+        // Display Image for Result Detected Face(s)
+        Mat tmp = new Mat (image.height(), image.width(), CvType.CV_8U, new Scalar(4));
+        Mat tmpfaces = new Mat (image.height(), image.width(), CvType.CV_8U, new Scalar(4));
+        try {
+            Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2BGRA);
+            Imgproc.cvtColor(mDetectedFace, tmpfaces, Imgproc.COLOR_RGB2BGRA);
+//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2GRAY);
+//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
+
+            mutableBitmap = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
+            mutableBitmapFace = Bitmap.createBitmap(tmpfaces.cols(), tmpfaces.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(tmp, mutableBitmap);
+            Utils.matToBitmap(tmpfaces, mutableBitmapFace);
+
+        } catch (CvException e){
+            Log.d("Exception",e.getMessage());
+        }
+        imgDisp.setImageBitmap(mutableBitmap);
+        imgFace.setImageBitmap(mutableBitmapFace);
+        tvFace.setText(filename);
     }
 
     private void processImage() {
 
-        FaceDetector fd = FaceDetector.getInstance();
         WFaceRecognizer wfr = WFaceRecognizer.getInstance();
         WFRDataFactory factory = WFRDataFactory.getInstance();
         LocalNameList lnlist = LocalNameList.getInstance();
 
-        String instr = afilename;
-        lnlist.inputLocalName(instr);
-        int index = lnlist.findExistNameLocation(instr);
+//        String instr = filename;
+        Log.e(TAG, "processImage: "+ filename );
+        lnlist.inputLocalName(filename);
+        int index = lnlist.findExistNameLocation(filename);
         if (-1 == index) {
             Log.e(TAG, "WRONG NAME, WHY?");
             WhooConfig.DBG(LandingPage.this, "WRONG NAME, WHY?");
@@ -327,22 +330,21 @@ public class LandingPage extends Activity {
             return;
         }
 
-//            mDetectedFace = mImageGray.submat(faces[ii].y,
-//                    faces[ii].y + faces[ii].height, faces[ii].x, faces[ii].x + faces[ii].width);
+//        Mat mat = fd.getDetectedFace();
 
-        Mat mat = fd.getDetectedFace();
-        Log.e(TAG, "loadFile: "+ mat.empty() );
-        assert (mat != null);
+        Log.e(TAG, "loadFile: "+ mDetectedFace.empty() );
+        assert (mDetectedFace != null);
         // resize the image to normalized size.
-        mat = WhooTools.resize(mat);
+        mDetectedFace = WhooTools.resize(mDetectedFace);
 
-        boolean ret = person.addFaceImage(mat);
+        boolean ret = person.addFaceImage(mDetectedFace);
         if (!ret) {
             Log.e(TAG, "Add Image Failed, WHY?");
             WhooConfig.DBG(LandingPage.this, "Add Image Failed, WHY?");
             return;
         } else {
             WhooConfig.DBG(LandingPage.this, "A face image added for " + name + " !");
+            Log.e(TAG, "processImage: "+ "A face image added for " + name + " !" );
         }
 
         // call FR.train() now, maybe it will run later on.
