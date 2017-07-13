@@ -44,6 +44,7 @@ containing a value of this type.
         public static final int colorAccent=0x7f070000;
         public static final int colorPrimary=0x7f070001;
         public static final int colorPrimaryDark=0x7f070002;
+        public static final int transparent=0x7f070003;
     }
     public static final class dimen {
         public static final int activity_horizontal_margin=0x7f080000;
@@ -89,30 +90,31 @@ containing a value of this type.
     public static final class id {
         public static final int any=0x7f0b0000;
         public static final int back=0x7f0b0001;
-        public static final int bottom=0x7f0b001c;
+        public static final int bottom=0x7f0b001e;
         public static final int button=0x7f0b0008;
         public static final int button2=0x7f0b0009;
         public static final int button_cancel=0x7f0b0006;
-        public static final int button_capture=0x7f0b0019;
+        public static final int button_capture=0x7f0b001b;
         public static final int button_ok=0x7f0b0005;
-        public static final int cameraSwithButton=0x7f0b0027;
-        public static final int camera_background=0x7f0b0017;
-        public static final int camera_preview=0x7f0b0015;
-        public static final int container=0x7f0b001b;
-        public static final int fp_btn_new=0x7f0b0023;
-        public static final int fp_btn_select=0x7f0b0024;
-        public static final int fp_buttonsLayout=0x7f0b0022;
-        public static final int fp_iv_icon=0x7f0b001d;
-        public static final int fp_listView=0x7f0b0025;
-        public static final int fp_tv_location=0x7f0b0021;
-        public static final int fp_tv_name=0x7f0b001e;
-        public static final int fp_tv_title=0x7f0b0020;
+        public static final int cameraSwithButton=0x7f0b0029;
+        public static final int camera_background=0x7f0b0019;
+        public static final int camera_preview=0x7f0b0017;
+        public static final int container=0x7f0b001d;
+        public static final int fp_btn_new=0x7f0b0025;
+        public static final int fp_btn_select=0x7f0b0026;
+        public static final int fp_buttonsLayout=0x7f0b0024;
+        public static final int fp_iv_icon=0x7f0b001f;
+        public static final int fp_listView=0x7f0b0027;
+        public static final int fp_tv_location=0x7f0b0023;
+        public static final int fp_tv_name=0x7f0b0020;
+        public static final int fp_tv_title=0x7f0b0022;
         public static final int front=0x7f0b0002;
         public static final int imageView=0x7f0b0007;
-        public static final int image_welcome=0x7f0b001a;
+        public static final int image_welcome=0x7f0b001c;
         public static final int imageview_face=0x7f0b0004;
         public static final int imgDisp=0x7f0b0014;
-        public static final int iv_icon=0x7f0b001f;
+        public static final int imgDispFace=0x7f0b0015;
+        public static final int iv_icon=0x7f0b0021;
         public static final int layoutDetails=0x7f0b000a;
         public static final int rbDir=0x7f0b000c;
         public static final int rbFile=0x7f0b000d;
@@ -121,12 +123,13 @@ containing a value of this type.
         public static final int rb_lbph=0x7f0b0012;
         public static final int rbgAlg=0x7f0b000f;
         public static final int rbgType=0x7f0b000b;
-        public static final int save_pic=0x7f0b0016;
-        public static final int settingsButton=0x7f0b0028;
+        public static final int save_pic=0x7f0b0018;
+        public static final int settingsButton=0x7f0b002a;
         public static final int textView4=0x7f0b0013;
-        public static final int text_help=0x7f0b0018;
+        public static final int text_help=0x7f0b001a;
         public static final int textview_person=0x7f0b0003;
-        public static final int top=0x7f0b0026;
+        public static final int top=0x7f0b0028;
+        public static final int tvFace=0x7f0b0016;
         public static final int tvLoc=0x7f0b000e;
     }
     public static final class layout {

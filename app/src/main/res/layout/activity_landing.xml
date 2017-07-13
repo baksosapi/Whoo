@@ -142,5 +142,21 @@
         android:layout_marginTop="10dp"
         />
 
+    <ImageView
+        android:id="@+id/imgDispFace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:layout_below="@id/imgDisp"
+        android:layout_marginTop="10dp"
+        />
+    <TextView
+        android:id="@+id/tvFace"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/imgDispFace"
+        android:layout_centerHorizontal="true"
+        />
+
 
 </RelativeLayout>

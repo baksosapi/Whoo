@@ -142,5 +142,21 @@
         android:layout_marginTop="10dp"
         />
 
+    <ImageView
+        android:id="@+id/imgDispFace"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:layout_below="@id/imgDisp"
+        android:layout_marginTop="10dp"
+        />
+    <TextView
+        android:id="@+id/tvFace"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/imgDispFace"
+        android:layout_centerHorizontal="true"
+        />
 
-</RelativeLayout><!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/layout/activity_landing.xml -->
+
+</RelativeLayout><!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/layout/activity_landing.xml -->

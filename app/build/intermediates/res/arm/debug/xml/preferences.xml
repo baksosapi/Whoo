@@ -27,4 +27,4 @@
         android:title="About"
         android:summary="smicn@foxmail.com\nPlease tap this to see author information"
         android:key="prefs_about"/>
-</PreferenceScreen><!-- From: file:/Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/app/src/main/res/xml/preferences.xml -->
+</PreferenceScreen><!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/xml/preferences.xml -->
