@@ -174,7 +174,7 @@ public class LandingPage extends Activity {
             Canvas c = new Canvas(b);
             fd.lock();
             fd.onDrawView(c);
-
+            fd.setResolution(b.getWidth(), b.getHeight());
 //            onDrawView: YUVdata Mat [ 1620*1920*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xfffffffff4b07f28, dataAddr=0xffffffffdad40010 ]
 //            onDrawView: YUVdata Mat [ 0*0*CV_8UC1, isCont=false, isSubmat=false, nativeObj=0xfffffffff4b07d68, dataAddr=0x0 ] --> File
             Mat mat = fd.getDetectedFaceForDisplaying();
