@@ -197,6 +197,7 @@ public class FaceDetector {
     }
 
     public void onCameraFrameInjected(byte[] data) {
+        Log.e(TAG, "onCameraFrameInjected: "+ data );
         if (!mInited) return;
         
         if (mIsLocked) return;

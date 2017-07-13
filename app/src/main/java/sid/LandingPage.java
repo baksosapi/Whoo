@@ -48,7 +48,11 @@ import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Vector;
 
@@ -175,6 +179,24 @@ public class LandingPage extends Activity {
             fd.lock();
             fd.onDrawView(c);
             fd.setResolution(b.getWidth(), b.getHeight());
+
+//            Path path = Paths.get("path/to/file");
+//            byte[] data = Files.readAllBytes(path);
+            File file = new File(folderLocation);
+            int size = (int) file.length();
+            byte[] bytes = new byte[size];
+            try {
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+                buf.read(bytes, 0, bytes.length);
+                buf.close();
+            } catch (FileNotFoundException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            fd.onCameraFrameInjected(bytes);
 //            onDrawView: YUVdata Mat [ 1620*1920*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xfffffffff4b07f28, dataAddr=0xffffffffdad40010 ]
 //            onDrawView: YUVdata Mat [ 0*0*CV_8UC1, isCont=false, isSubmat=false, nativeObj=0xfffffffff4b07d68, dataAddr=0x0 ] --> File
             Mat mat = fd.getDetectedFaceForDisplaying();
