@@ -116,7 +116,7 @@ public class FaceDetector {
 
     public void init() {
         Log.i(TAG, "fd.init().");
-        
+
         try {
             //
             // load cascade file from application resources raw/xxcascadexx.xml

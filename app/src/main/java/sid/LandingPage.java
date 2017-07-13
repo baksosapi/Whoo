@@ -1,6 +1,7 @@
 package sid;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lamar.cs.whoo.FaceActivity;
 import com.lamar.cs.whoo.FaceDetector;
@@ -66,6 +68,8 @@ public class LandingPage extends Activity {
     FeatureDetector detector;
     DescriptorExtractor descriptor;
     DescriptorMatcher matcher;
+    private Context mContext;
+    private String afilename;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle){
@@ -144,40 +148,106 @@ public class LandingPage extends Activity {
 //            imgDisp.setImageBitmap(bitmap);
 
             // Init detector
-//            CascadeClassifier faceDetector = new CascadeClassifier(getClass().getResource("/res/raw/lbpcascade_frontalface.xml").getPath());
-            CascadeClassifier faceDetector = new CascadeClassifier(getClass().getResource("/res/raw/haarcascade_frontalface_alt.xml").getPath());
+            CascadeClassifier faceDetector = new CascadeClassifier(getClass().getResource("/res/raw/lbpcascade_frontalface.xml").getPath());
+//            CascadeClassifier faceDetector = new CascadeClassifier(getResources().openRawResource(R.raw.haarcascade_frontalface_alt));
+//            CascadeClassifier faceDetector = new CascadeClassifier(getClass().getResource("/res/raw/haarcascade_frontalface_alt.xml").getPath());
 
-            Log.e(TAG, "loadFile: "+"facedetector "+ faceDetector );
+//            if (faceDetector.empty()) Log.e(TAG, "loadFile: "+ "Failed load Cascade" );
 
             // Proses Image
 //            img1 = new Mat();
             Mat image = Highgui.imread(folderLocation);
+            String mCascadeFileName = "lppcascade.xml";
 
+            File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
+            File mCascadeFile = new File(cascadeDir, mCascadeFileName);
+            CascadeClassifier mDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+
+            Log.e(TAG, "loadFile: "+mDetector.empty() );
             MatOfRect faceDetection = new MatOfRect();
-            faceDetector.detectMultiScale(image, faceDetection);
+            mDetector.detectMultiScale(image, faceDetection);
 
             Log.e(TAG, String.format("loadFile: "+"Detected %s faces", faceDetection.toArray().length ));
 
             String filename= folderLocation.substring(folderLocation.lastIndexOf("/")+1);
 
             for (Rect rect : faceDetection.toArray()){
-                Log.e(TAG, "loadFile: "+1 );
                 Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
                 Boolean bool = null;
-                bool = Highgui.imwrite(filename, image);
+                String newfilename = "faceDetection.png";
+
+                File path = new File(Environment.getExternalStorageDirectory() + "/Images/");
+                path.mkdirs();
+                File file = new File(path, "image.png");
+
+                afilename = file.toString();
+                bool = Highgui.imwrite(afilename, image);
+
+                System.out.println(String.format("Writing %s", newfilename));
+//                imwrite(newfilename, image);
+//                Highgui.imwrite(newfilename, )
 
                 if (bool)
                     Log.e(TAG, "loadFile: "+ "SUCCESS writing image to external storage" );
                 else
                     Log.e(TAG, "Fail writing image to external storage");
 
-                String newfilename = "faceDetection.png";
-                System.out.println(String.format("Writing %s", newfilename));
-//                imwrite(newfilename, image);
-//                Highgui.imwrite(newfilename, )
 
             }
-            imgDisp.setImageBitmap(bitmap);
+            File aImg = new  File(afilename);
+
+            Bitmap myBitmap = BitmapFactory.decodeFile(aImg.getAbsolutePath());
+
+            imgDisp.setImageBitmap(myBitmap);
+
+            FaceDetector fd = FaceDetector.getInstance();
+            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+            WFRDataFactory factory = WFRDataFactory.getInstance();
+            LocalNameList lnlist = LocalNameList.getInstance();
+
+            String instr = filename;
+            lnlist.inputLocalName(instr);
+            int index = lnlist.findExistNameLocation(instr);
+            if (-1 == index) {
+                Log.e(TAG, "WRONG NAME, WHY?");
+                WhooConfig.DBG(LandingPage.this, "WRONG NAME, WHY?");
+                return;
+            }
+
+            String name = lnlist.getLocalName(index);
+
+            WFRPerson person = factory.addPerson(name);
+            if (null == person) {
+                Log.e(TAG, "Add Person Failed, WHY?");
+                WhooConfig.DBG(LandingPage.this, "Add Person Failed, WHY?");
+                return;
+            }
+
+            mDetectedFace = mImageGray.submat(faces[ii].y,
+                    faces[ii].y + faces[ii].height, faces[ii].x, faces[ii].x + faces[ii].width);
+
+            Mat mat = fd.getDetectedFace();
+            Log.e(TAG, "loadFile: "+ mat.empty() );
+            assert (mat != null);
+            // resize the image to normalized size.
+            mat = WhooTools.resize(mat);
+
+            boolean ret = person.addFaceImage(mat);
+            if (!ret) {
+                Log.e(TAG, "Add Image Failed, WHY?");
+                WhooConfig.DBG(LandingPage.this, "Add Image Failed, WHY?");
+                return;
+            } else {
+                WhooConfig.DBG(LandingPage.this, "A face image added for " + name + " !");
+            }
+
+            // call FR.train() now, maybe it will run later on.
+            wfr.train();
+
+            // let the faceActivity exit
+//            FaceActivity.this.finish();
+
+            Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
 
 //            Utils.bitmapToMat(bitmap, img1);
 //            Imgproc.cvtColor(img1, img1, Imgproc.COLOR_RGB2GRAY);
@@ -204,18 +274,18 @@ public class LandingPage extends Activity {
 //            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
 //            WFRDataFactory factory = WFRDataFactory.getInstance();
 
-            LocalNameList lnlist = LocalNameList.getInstance();
+//            LocalNameList lnlist = LocalNameList.getInstance();
+//
+//            String instr = filename;
+//            lnlist.inputLocalName(instr);
+//            int index = lnlist.findExistNameLocation(instr);
+//            if (-1 == index) {
+//                Log.e(TAG, "WRONG NAME, WHY?");
+//                WhooConfig.DBG(LandingPage.this, "WRONG NAME, WHY?");
+//                return;
+//            }
 
-            String instr = filename;
-            lnlist.inputLocalName(instr);
-            int index = lnlist.findExistNameLocation(instr);
-            if (-1 == index) {
-                Log.e(TAG, "WRONG NAME, WHY?");
-                WhooConfig.DBG(LandingPage.this, "WRONG NAME, WHY?");
-                return;
-            }
-
-            String name = lnlist.getLocalName(index);
+//            String name = lnlist.getLocalName(index);
 
 //            WFRPerson person = factory.addPerson(name);
 //            if (null == person) {

@@ -95,7 +95,7 @@ public class WelcomeActivity extends Activity {
         public void onManagerConnected(int status) {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
-                        Log.e(TAG, "OpenCV loaded successfully");
+                    Log.e(TAG, "OpenCV loaded successfully");
 
                         // Load native library after(!) OpenCV initialization
                         System.loadLibrary("facerec");
@@ -105,10 +105,11 @@ public class WelcomeActivity extends Activity {
                         WFRDataFactory.getInstance().load();
                         Log.i(TAG, "WFR data loaded.");
 
-                         FaceDetector fd = FaceDetector.getInstance();
+                    FaceDetector fd = FaceDetector.getInstance();
                         fd.setContext(WelcomeActivity.this);
                         fd.init();
                         Log.i(TAG, "fd inited.");
+                        Log.e(TAG, "fd inited.");
 
                         WFaceRecognizer wfr = WFaceRecognizer.getInstance();
                         wfr.setContext(WelcomeActivity.this);
