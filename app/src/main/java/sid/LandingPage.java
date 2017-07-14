@@ -54,11 +54,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Vector;
 
 import lib.folderpicker.FolderPicker;
 
 import static android.R.attr.height;
+import static android.R.attr.logo;
 import static android.R.attr.width;
 
 /**
@@ -161,27 +163,26 @@ public class LandingPage extends Activity {
 //        startActivity(intent);
 
 //        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
-        folderLocation = "/storage/emulated/0/Download/lena.png";
+        folderLocation = "/storage/emulated/0/Download/lena.png"; // 512px
+//        folderLocation = "/storage/emulated/0/Download/image2.jpg"; // 1024px
 
         File imgFile = new File(folderLocation);
 
         if (imgFile.exists()){
             FaceDetector fd = FaceDetector.getInstance();
+            WFaceRecognizer fr = WFaceRecognizer.getInstance();
 
             // Init detector Proses Image
-
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;
             options.inMutable = true;
             Bitmap b = BitmapFactory.decodeFile(folderLocation, options);
 
             Canvas c = new Canvas(b);
-            fd.lock();
-            fd.onDrawView(c);
             fd.setResolution(b.getWidth(), b.getHeight());
+//            fd.lock();
 
-//            Path path = Paths.get("path/to/file");
-//            byte[] data = Files.readAllBytes(path);
+            // Get Bytes of Image
             File file = new File(folderLocation);
             int size = (int) file.length();
             byte[] bytes = new byte[size];
@@ -196,26 +197,43 @@ public class LandingPage extends Activity {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
             fd.onCameraFrameInjected(bytes);
+            fd.onDrawView(c);
+
+            if (fd.hasDetected()) {
+                //
+                // if face predicted, show the name to user
+                //
+                Log.e(TAG, "loadFile: "+"detected face" );
+                fr.onDrawView(c);
+            } else {
+                //
+                // otherwise, clear the previous results
+                //
+                fr.clear();
+            }
+//            Log.e(TAG, "loadFile: "+ Arrays.toString(bytes));
+
 //            onDrawView: YUVdata Mat [ 1620*1920*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xfffffffff4b07f28, dataAddr=0xffffffffdad40010 ]
 //            onDrawView: YUVdata Mat [ 0*0*CV_8UC1, isCont=false, isSubmat=false, nativeObj=0xfffffffff4b07d68, dataAddr=0x0 ] --> File
-            Mat mat = fd.getDetectedFaceForDisplaying();
-            Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(mat, bitmap);
-            imgDisp.setImageBitmap(bitmap);
+//            Mat mat = fd.getDetectedFaceForDisplaying();
+//            Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(mat, bitmap);
+//            imgDisp.setImageBitmap(bitmap);
 
-            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
-            String result = wfr.getResult();
-            if (result != null) {
-                TextView textView = (TextView) findViewById(R.id.textview_person);
-                if (result.equals("Unknown")) {
-                    textView.setText("Sorry, unknown");
-                } else {
-                    textView.setText(result + " (" + (int)wfr.getConfidence() + ")");
-                }
-            }
+//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+//            String result = wfr.getResult();
+//            if (result != null) {
+//                TextView textView = (TextView) findViewById(R.id.textview_person);
+//                if (result.equals("Unknown")) {
+//                    textView.setText("Sorry, unknown");
+//                } else {
+//                    textView.setText(result + " (" + (int)wfr.getConfidence() + ")");
+//                }
+//            }
 
-//            processPhoto();
+            processPhoto();
 
             // Recognize
 //            WFRDataFactory wdf = WFRDataFactory.getInstance();
@@ -310,7 +328,8 @@ public class LandingPage extends Activity {
         Mat tmpfaces = new Mat (image.height(), image.width(), CvType.CV_8U, new Scalar(4));
         try {
             Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2BGRA);
-            Imgproc.cvtColor(mDetectedFace, tmpfaces, Imgproc.COLOR_RGB2BGRA);
+            Mat mImageGray = mDetectedFace.submat(0, mDetectedFace.height(), 0, mDetectedFace.width());
+            Imgproc.cvtColor(mImageGray, tmpfaces, Imgproc.COLOR_RGB2BGRA);
 //                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2GRAY);
 //                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
 

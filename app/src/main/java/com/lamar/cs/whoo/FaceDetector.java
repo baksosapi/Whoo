@@ -197,14 +197,16 @@ public class FaceDetector {
     }
 
     public void onCameraFrameInjected(byte[] data) {
-        Log.e(TAG, "onCameraFrameInjected: "+ data );
         if (!mInited) return;
         
         if (mIsLocked) return;
 
         if (null == mYUVData) {
+            Log.e(TAG, "onCameraFrameInjected:- Null" );
             mYUVData = new Mat(mHeight + (mHeight/2), mWidth, CvType.CV_8UC1);
             mRGBData = new Mat();
+        } else {
+            Log.e(TAG, "onCameraFrameInjected:-unsync "+ mYUVData.dump() );
         }
 
         
@@ -215,6 +217,7 @@ public class FaceDetector {
 
         synchronized (this) {
             mYUVData.put(0, 0, data);
+            Log.e(TAG, "onCameraFrameInjected:-sync"+ mYUVData.dump());
         }
 
         if (mView != null) {
@@ -231,6 +234,7 @@ public class FaceDetector {
         //
         Log.e(TAG, "onDrawView: YUVdata "+ mYUVData );
         Log.e(TAG, "onDrawView: isLock "+ mIsLocked );
+//        Log.e(TAG, "onDrawView: isLock "+ hasDetected() );
         if (null == mYUVData || mIsLocked)
             return;
         if (null == mDetector)
@@ -239,7 +243,7 @@ public class FaceDetector {
         synchronized (this) {
             //Log.d(TAG, "fd.onDraw(1): h=" + mHeight + ",w=" + mWidth);
             mImageGray = mYUVData.submat(0, mHeight, 0, mWidth);
-            Log.e(TAG, "onDrawView: "+ mImageGray );
+            Log.e(TAG, "onDrawView: mImageGray "+ mImageGray.dump() );
             //Log.d(TAG, "fd.onDraw(2): h=" + mImageGray.height() + ",w=" + mImageGray.width());
             
             //
@@ -265,8 +269,20 @@ public class FaceDetector {
         //
         // detect faces and output them into mats
         //
+
+        String mCascadeFileName = "lppcascade.xml";
+
+//        File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
+//        File mCascadeFile = new File(cascadeDir, mCascadeFileName);
+//        CascadeClassifier mDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+
         mDetector.detectMultiScale(mImageGray, mats, 1.1, 2, 2,
                 new Size(faceSize, faceSize), new Size());
+
+        Log.e(TAG, "onDrawView:- faceSize "+ faceSize );
+        Log.e(TAG, "onDrawView:- size "+ new Size() );
+        Log.e(TAG, "onDrawView:- mats "+ mats.dump() );
+        Log.e(TAG, "onDrawView:- mats "+ mImageGray.dump() );
 
         //
         // draw rects around the faces if found
