@@ -149,8 +149,11 @@ containing a value of this type.
         public static final int top_menu=0x7f03000a;
     }
     public static final class raw {
-        public static final int haarcascade_frontalface_alt=0x7f050000;
-        public static final int lbpcascade_frontalface=0x7f050001;
+        public static final int balsamic=0x7f050000;
+        public static final int haarcascade_frontalface_alt=0x7f050001;
+        public static final int lbpcascade_frontalface=0x7f050002;
+        public static final int nail=0x7f050003;
+        public static final int scarlett_johansson=0x7f050004;
     }
     public static final class string {
         public static final int allow_storage_permission=0x7f090000;

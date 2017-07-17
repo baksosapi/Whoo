@@ -28,6 +28,7 @@ import com.lamar.cs.whoo.WFRFaceImage;
 import com.lamar.cs.whoo.WFRPerson;
 import com.lamar.cs.whoo.WFaceRecognizer;
 import com.lamar.cs.whoo.WhooConfig;
+import com.lamar.cs.whoo.WhooLog;
 import com.lamar.cs.whoo.WhooTools;
 
 import org.opencv.android.Utils;
@@ -61,6 +62,7 @@ import lib.folderpicker.FolderPicker;
 
 import static android.R.attr.height;
 import static android.R.attr.logo;
+import static android.R.attr.popupAnimationStyle;
 import static android.R.attr.width;
 
 /**
@@ -165,8 +167,14 @@ public class LandingPage extends Activity {
 //        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
         folderLocation = "/storage/emulated/0/Download/lena.png"; // 512px
 //        folderLocation = "/storage/emulated/0/Download/image2.jpg"; // 1024px
+//        folderLocation = "/storage/emulated/0/Download/scarlett_johansson.png"; // 1920px
+//        folderLocation = "/storage/emulated/0/Download/10006868.jpg"; // 1920px
+//        folderLocation = "/storage/emulated/0/Download/nail.png"; // 1920px
+//        folderLocation = "/storage/emulated/0/Download/balsamic.png"; // 1920px
 
         File imgFile = new File(folderLocation);
+
+
 
         if (imgFile.exists()){
             FaceDetector fd = FaceDetector.getInstance();
@@ -181,104 +189,77 @@ public class LandingPage extends Activity {
             Canvas c = new Canvas(b);
             fd.setResolution(b.getWidth(), b.getHeight());
 //            fd.lock();
-
+            Mat photo = Highgui.imread(folderLocation);
             // Get Bytes of Image
-            File file = new File(folderLocation);
-            int size = (int) file.length();
-            byte[] bytes = new byte[size];
-            try {
-                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-                buf.read(bytes, 0, bytes.length);
-                buf.close();
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            fd.onCameraFrameInjected(bytes);
+//            File file = new File(folderLocation);
+//            int size = (int) file.length();
+//            byte[] bytes = new byte[size];
+//            try {
+//                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+//                buf.read(bytes, 0, bytes.length);
+//                buf.close();
+//            } catch (FileNotFoundException e) {
+//                 TODO Auto-generated catch block
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                 TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//
+//            WhooLog.d("File Name = "+ filename);
+//
+            fd.onCameraFrameInjected(photo);
             fd.onDrawView(c);
 
             if (fd.hasDetected()) {
                 //
                 // if face predicted, show the name to user
                 //
-                Log.e(TAG, "loadFile: "+"detected face" );
                 fr.onDrawView(c);
+                showPhoto(photo, fd.getDetectedFaceForDisplaying(), fr.getResult() +" "+ Math.round(fr.getConfidence()));
+
             } else {
                 //
                 // otherwise, clear the previous results
                 //
                 fr.clear();
             }
-//            Log.e(TAG, "loadFile: "+ Arrays.toString(bytes));
-
-//            onDrawView: YUVdata Mat [ 1620*1920*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xfffffffff4b07f28, dataAddr=0xffffffffdad40010 ]
-//            onDrawView: YUVdata Mat [ 0*0*CV_8UC1, isCont=false, isSubmat=false, nativeObj=0xfffffffff4b07d68, dataAddr=0x0 ] --> File
-//            Mat mat = fd.getDetectedFaceForDisplaying();
-//            Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(mat, bitmap);
-//            imgDisp.setImageBitmap(bitmap);
-
-//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
-//            String result = wfr.getResult();
-//            if (result != null) {
-//                TextView textView = (TextView) findViewById(R.id.textview_person);
-//                if (result.equals("Unknown")) {
-//                    textView.setText("Sorry, unknown");
-//                } else {
-//                    textView.setText(result + " (" + (int)wfr.getConfidence() + ")");
-//                }
-//            }
-
-            processPhoto();
-
-            // Recognize
-//            WFRDataFactory wdf = WFRDataFactory.getInstance();
-//            Vector<WFRFaceImage> images = wdf.getFaceImages();
-
-//            int[] label = new int[1];
-//            double[] confidence = new double[1];
-//
-//            if (null == mReadable) {
-//                Log.e(TAG, "this.mReadable is not ready.");
-//                mPredictResult = null;
-////                return false;
-//            } else {
-//                Log.d(TAG, "call opencv.predict():");
-//                mReadable.predict(mDetectedFace, label, confidence);
-//                Log.d(TAG, "opencv.predict() returned, label[0]=" + label[0]);
-//
-//            }
-
-
-//            WFaceRecognizer wfr = WFaceRecognizer.getInstance();
-//            wfr.onDrawView(null, mDetectedFace);
-//            String result = wfr.getResult();
-//            Log.e(TAG, "loadFile: "+ result );
-//            if (result != null) {
-//
-//                TextView textView = (TextView) findViewById(R.id.textview_person);
-//                if (result.equals("Unknown")) {
-//
-//                     Add record
-//
-//                     processImage();
-//                    textView.setText("Sorry, unknown");
-//                } else {
-//                    textView.setText(result + " (" + (int)wfr.getConfidence() + ")");
-//                }
-//            }
-
-//            Toast.makeText(getApplicationContext(), "Load File Success : "+filename, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Load File Success : "+ fr.getResult(), Toast.LENGTH_SHORT).show();
 
         } else {
             Log.e(TAG, "loadFile: "+"Image Not found" );
         }
 
 
+    }
+
+    private void showPhoto(Mat photo, Mat detectedFaceForDisplaying, String result) {
+
+        // Display Image for Result Detected Face(s)
+        Mat tmp = new Mat (photo.height(), photo.width(), CvType.CV_8U, new Scalar(4));
+        Mat tmpfaces = new Mat (detectedFaceForDisplaying.height(), detectedFaceForDisplaying.width(), CvType.CV_8U, new Scalar(4));
+        try {
+            Imgproc.cvtColor(photo, tmp, Imgproc.COLOR_RGB2BGRA);
+            Mat faces = detectedFaceForDisplaying.submat(0, detectedFaceForDisplaying.height(), 0, detectedFaceForDisplaying.width());
+//            Core.flip(faces.t(), faces, 0);
+            Imgproc.cvtColor(faces, tmpfaces, Imgproc.COLOR_RGB2BGRA);
+
+//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2GRAY);
+//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
+
+            mutableBitmap = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
+            mutableBitmapFace = Bitmap.createBitmap(tmpfaces.cols(), tmpfaces.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(tmp, mutableBitmap);
+            Utils.matToBitmap(tmpfaces, mutableBitmapFace);
+
+        } catch (CvException e){
+            Log.d("Exception",e.getMessage());
+        }
+
+
+        imgDisp.setImageBitmap(mutableBitmap);
+        imgFace.setImageBitmap(mutableBitmapFace);
+        tvFace.setText(result);
     }
 
     private void processPhoto() {
@@ -300,7 +281,6 @@ public class LandingPage extends Activity {
         if (pos > 0) {
             filename = filename.substring(0, pos);
         }
-        Log.e(TAG, "loadFile: "+ filename );
 
         mDetectedFace = new Mat();
         Rect[] faces = faceDetection.toArray();

@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,10 +41,13 @@ import org.opencv.core.MatOfRect;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.core.CvType; 
+import org.opencv.core.CvType;
+import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
 import org.opencv.objdetect.CascadeClassifier;
+
+import sid.LandingPage;
 
 /**
  * Created by Samuel on 10/10/2015.
@@ -196,6 +200,7 @@ public class FaceDetector {
         mIsCameraFacingBack = back;
     }
 
+
     public void onCameraFrameInjected(byte[] data) {
         if (!mInited) return;
         
@@ -232,8 +237,8 @@ public class FaceDetector {
         //
         // exceptions if any.
         //
-        Log.e(TAG, "onDrawView: YUVdata "+ mYUVData );
-        Log.e(TAG, "onDrawView: isLock "+ mIsLocked );
+//        Log.e(TAG, "onDrawView: YUVdata "+ mYUVData );
+//        Log.e(TAG, "onDrawView: isLock "+ mIsLocked );
 //        Log.e(TAG, "onDrawView: isLock "+ hasDetected() );
         if (null == mYUVData || mIsLocked)
             return;
@@ -241,23 +246,33 @@ public class FaceDetector {
             return;
 
         synchronized (this) {
-            //Log.d(TAG, "fd.onDraw(1): h=" + mHeight + ",w=" + mWidth);
-            mImageGray = mYUVData.submat(0, mHeight, 0, mWidth);
-            Log.e(TAG, "onDrawView: mImageGray "+ mImageGray.dump() );
-            //Log.d(TAG, "fd.onDraw(2): h=" + mImageGray.height() + ",w=" + mImageGray.width());
-            
-            //
-            // http://stackoverflow.com/questions/16265673/rotate-image-by-90-180-or-270-degrees
-            //
-            if (mIsCameraFacingBack) {
-                // Rotate clockwise 90 degrees
-                Core.flip(mImageGray.t(), mImageGray, 1);
+            if (mImageGray != null)
+//            Log.e(TAG, "onDrawView: mImageGray"+ mImageGray.toString() );
+//            mImageGrayMat [ 1920*1080*CV_8UC1, isCont=true, isSubmat=false, nativeObj=0xfffffffff4e48350, dataAddr=0xffffffffd9a80010 ]
+
+            Log.d(TAG, "fd.onDraw(1): h=" + mHeight + ",w=" + mWidth);
+//            Log.e(TAG, "onDrawView: TYPE "+ mYUVData.type() );
+//            Log.e(TAG, "onDrawView: TYPE "+ mYUVData.size() );
+            if (mYUVData.type() != 16) {
+                Log.e(TAG, "onDrawView: TYPE OK" );
+                mImageGray = mYUVData.submat(0, mHeight, 0, mWidth);
+                //
+                // http://stackoverflow.com/questions/16265673/rotate-image-by-90-180-or-270-degrees
+                //
+                if (mIsCameraFacingBack) {
+                    // Rotate clockwise 90 degrees
+                    Core.flip(mImageGray.t(), mImageGray, 1);
+                } else {
+                    // Rotate clockwise 270 degrees
+                    Core.flip(mImageGray.t(), mImageGray, 0);
+                }
             } else {
-                // Rotate clockwise 270 degrees
-                Core.flip(mImageGray.t(), mImageGray, 0);
+                //
+                // For Static Image File
+                //
+                mImageGray = mYUVData;
             }
-            
-            //Log.d(TAG, "fd.onDraw(3): h=" + mImageGray.height() + ",w=" + mImageGray.width());
+            Log.d(TAG, "fd.onDraw(3): h=" + mImageGray.height() + ",w=" + mImageGray.width());
         }
 
         // the detected faces will be output into mats
@@ -270,19 +285,9 @@ public class FaceDetector {
         // detect faces and output them into mats
         //
 
-        String mCascadeFileName = "lppcascade.xml";
-
-//        File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
-//        File mCascadeFile = new File(cascadeDir, mCascadeFileName);
-//        CascadeClassifier mDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
-
         mDetector.detectMultiScale(mImageGray, mats, 1.1, 2, 2,
                 new Size(faceSize, faceSize), new Size());
-
-        Log.e(TAG, "onDrawView:- faceSize "+ faceSize );
-        Log.e(TAG, "onDrawView:- size "+ new Size() );
-        Log.e(TAG, "onDrawView:- mats "+ mats.dump() );
-        Log.e(TAG, "onDrawView:- mats "+ mImageGray.dump() );
+        Log.e(TAG, String.format("loadFile: "+"Detected %s faces", mats.toArray().length ));
 
         //
         // draw rects around the faces if found
@@ -381,6 +386,36 @@ public class FaceDetector {
             return mat;
         } else {
             return mDetectedFace;
+        }
+    }
+
+    public void onCameraFrameInjected(Mat data) {
+//        Log.e(TAG, "onCameraFrameInjected:-sync"+ data.type()); // png 16
+
+        if (!mInited) return;
+
+        if (mIsLocked) return;
+
+        if (null == mYUVData) {
+//            Log.e(TAG, "onCameraFrameInjected:- Null" );
+            mYUVData = new Mat(mHeight + (mHeight/2), mWidth, CvType.CV_8UC1);
+            mRGBData = new Mat();
+        } else {
+//            Log.e(TAG, "onCameraFrameInjected:-unsync "+ mYUVData.dump() );
+        }
+
+
+        if (0 == (++mFrameCount % FRAMERATE)) {
+            mFrameCount = 0;
+            return;
+        }
+
+        synchronized (this) {
+            mYUVData = data;
+        }
+
+        if (mView != null) {
+            mView.invalidate();
         }
     }
 }
