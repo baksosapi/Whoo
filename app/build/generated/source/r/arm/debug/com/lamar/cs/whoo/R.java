@@ -90,32 +90,33 @@ containing a value of this type.
     public static final class id {
         public static final int any=0x7f0b0000;
         public static final int back=0x7f0b0001;
-        public static final int bottom=0x7f0b0021;
-        public static final int button=0x7f0b0008;
-        public static final int button2=0x7f0b0009;
+        public static final int bottom=0x7f0b0025;
+        public static final int btCamera=0x7f0b0008;
+        public static final int btLoadFile=0x7f0b0009;
         public static final int button_cancel=0x7f0b0006;
-        public static final int button_capture=0x7f0b001e;
+        public static final int button_capture=0x7f0b0022;
         public static final int button_ok=0x7f0b0005;
-        public static final int cameraSwithButton=0x7f0b002c;
-        public static final int camera_background=0x7f0b001c;
-        public static final int camera_preview=0x7f0b001a;
-        public static final int container=0x7f0b0020;
-        public static final int fp_btn_new=0x7f0b0028;
-        public static final int fp_btn_select=0x7f0b0029;
-        public static final int fp_buttonsLayout=0x7f0b0027;
-        public static final int fp_iv_icon=0x7f0b0022;
-        public static final int fp_listView=0x7f0b002a;
-        public static final int fp_tv_location=0x7f0b0026;
-        public static final int fp_tv_name=0x7f0b0023;
-        public static final int fp_tv_title=0x7f0b0025;
+        public static final int cameraSwithButton=0x7f0b0030;
+        public static final int camera_background=0x7f0b0020;
+        public static final int camera_preview=0x7f0b001e;
+        public static final int container=0x7f0b0024;
+        public static final int fp_btn_new=0x7f0b002c;
+        public static final int fp_btn_select=0x7f0b002d;
+        public static final int fp_buttonsLayout=0x7f0b002b;
+        public static final int fp_iv_icon=0x7f0b0026;
+        public static final int fp_listView=0x7f0b002e;
+        public static final int fp_tv_location=0x7f0b002a;
+        public static final int fp_tv_name=0x7f0b0027;
+        public static final int fp_tv_title=0x7f0b0029;
         public static final int front=0x7f0b0002;
         public static final int imageView=0x7f0b0007;
-        public static final int image_welcome=0x7f0b001f;
+        public static final int image_welcome=0x7f0b0023;
         public static final int imageview_face=0x7f0b0004;
-        public static final int imgDisp=0x7f0b0017;
-        public static final int imgDispFace=0x7f0b0018;
-        public static final int iv_icon=0x7f0b0024;
+        public static final int imgDisp=0x7f0b0018;
+        public static final int imgDispFace=0x7f0b0019;
+        public static final int iv_icon=0x7f0b0028;
         public static final int layoutDetails=0x7f0b000a;
+        public static final int progbar_h=0x7f0b001b;
         public static final int rbAdd=0x7f0b000c;
         public static final int rbCheck=0x7f0b000d;
         public static final int rbDir=0x7f0b000f;
@@ -126,14 +127,17 @@ containing a value of this type.
         public static final int rbgAlg=0x7f0b0012;
         public static final int rbgMode=0x7f0b000b;
         public static final int rbgType=0x7f0b000e;
-        public static final int save_pic=0x7f0b001b;
-        public static final int settingsButton=0x7f0b002d;
+        public static final int save_pic=0x7f0b001f;
+        public static final int settingsButton=0x7f0b0031;
+        public static final int sv=0x7f0b0017;
         public static final int textView4=0x7f0b0016;
-        public static final int text_help=0x7f0b001d;
+        public static final int text_help=0x7f0b0021;
         public static final int textview_person=0x7f0b0003;
-        public static final int top=0x7f0b002b;
-        public static final int tvFace=0x7f0b0019;
+        public static final int top=0x7f0b002f;
+        public static final int tvFace=0x7f0b001a;
         public static final int tvLoc=0x7f0b0011;
+        public static final int tv_outof=0x7f0b001c;
+        public static final int tv_percentage=0x7f0b001d;
     }
     public static final class layout {
         public static final int activity_face=0x7f030000;
@@ -167,10 +171,12 @@ containing a value of this type.
         public static final int location=0x7f090008;
         public static final int main_title=0x7f090009;
         public static final int neww=0x7f09000a;
-        public static final int select=0x7f09000b;
-        public static final int title=0x7f09000c;
-        public static final int up=0x7f09000d;
-        public static final int upload=0x7f09000e;
+        public static final int percent_sign=0x7f09000b;
+        public static final int select=0x7f09000c;
+        public static final int slash_sign=0x7f09000d;
+        public static final int title=0x7f09000e;
+        public static final int up=0x7f09000f;
+        public static final int upload=0x7f090010;
     }
     public static final class style {
         /** 

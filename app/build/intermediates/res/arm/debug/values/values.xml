@@ -57,7 +57,17 @@
     <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
     <eat-comment/>
     <string name="neww">New</string>
+    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="percent_sign">%</string>
+    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
+    <eat-comment/>
     <string name="select">Select</string>
+    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="slash_sign">/</string>
+    <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/build/intermediates/exploded-aar/lib.kashif/folderpicker/2.2/res/values/values.xml -->
+    <eat-comment/>
     <string name="title">Select Folder</string>
     <string name="up">Up</string>
     <!-- From: file:/home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/app/src/main/res/values/strings.xml -->

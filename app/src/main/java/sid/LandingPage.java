@@ -1,18 +1,26 @@
 package sid;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -55,7 +63,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 
 import lib.folderpicker.FolderPicker;
@@ -75,6 +85,7 @@ public class LandingPage extends Activity {
     private static final int FILE_PICKER_CODE = 786;
     private static final String TAG = LandingPage.class.getSimpleName();
     EditText dirLoc;
+    Button btCamera, btLoadFile;
     TextView tvLoc;
     ImageView imgDisp, imgFace;
     RadioButton rbDir, rbFile, rbEigen, rbFisher, rbLbph;
@@ -82,7 +93,7 @@ public class LandingPage extends Activity {
     private int chooseType;
     private String folderLocation;
     Mat descriptors2,descriptors1;
-    TextView tvFace;
+    TextView tvFace, tv_percentage;
     Mat image;
     Mat mDetectedFace ;
     MatOfKeyPoint keypoints1,keypoints2;
@@ -96,13 +107,23 @@ public class LandingPage extends Activity {
     private String filename;
 //    private FaceRecognizer mReadable;
     private String mPredictResult;
+    ProgressBar pbar;
+
+    private BackgroundTask mTask;
+    private static String m_chosenDir = "";
+    LogReport logReport = new LogReport();
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle){
         super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_landing);
 
+        mTask = new BackgroundTask();
+
 //        dirLoc = (EditText) findViewById(R.id.editText);
+        btCamera = (Button) findViewById(R.id.btCamera);
+        btLoadFile = (Button) findViewById(R.id.btLoadFile);
+
         rbDir = (RadioButton) findViewById(R.id.rbDir);
         rbFile = (RadioButton) findViewById(R.id.rbFile);
         rbEigen = (RadioButton) findViewById(R.id.rb_eigen);
@@ -114,12 +135,24 @@ public class LandingPage extends Activity {
 
         tvLoc = (TextView) findViewById(R.id.tvLoc);
 
+        pbar = (ProgressBar) findViewById(R.id.progbar_h);
+
         imgDisp = (ImageView) findViewById(R.id.imgDisp);
         imgFace = (ImageView) findViewById(R.id.imgDispFace);
         tvFace = (TextView) findViewById(R.id.tvFace) ;
+        tv_percentage = (TextView) findViewById(R.id.tv_percentage) ;
 //        imgDisp = (ImageView) findViewById(R.id.draw_view);
 //        dirLoc.setInputType(InputType.TYPE_NULL);
 //        dirLoc.setKeyListener(null);
+
+
+        tvLoc.setText("No Location selected");
+
+        initListener();
+    }
+
+    private void initListener() {
+        final AlertDialog.Builder builder= new AlertDialog.Builder(LandingPage.this);
 
         rbgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -135,7 +168,36 @@ public class LandingPage extends Activity {
             }
         });
 
-        tvLoc.setText("No Location selected");
+        btLoadFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                m_chosenDir = String.valueOf(
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM+"/SID"));
+
+                Log.e(TAG, "onClick: "+new File(m_chosenDir).exists() );
+                if(new File(m_chosenDir).exists() && !LandingPage.m_chosenDir.isEmpty()) {
+
+                    // Execution main process
+//                    task.execute();
+                    if (mTask == null){
+                        mTask = new BackgroundTask();
+                    }
+                    mTask.execute();
+//                    mTask = (BackgroundTask) new BackgroundTask().execute();
+//                    btn_start.setClickable(false);
+                    Toast.makeText(LandingPage.this, "Mode : Batch Mode ", Toast.LENGTH_SHORT).show();
+                } else {
+                    builder.setTitle("Directory didn't selected?");
+                    builder.setMessage("Operation aborted, please Select Directory or 'OK' to default directory.");
+                    builder.setPositiveButton("OK", (DialogInterface.OnClickListener) mTask.execute());
+                    builder.setNegativeButton("CANCEL", null);
+                    builder.show();
+
+                }
+
+            }
+        });
     }
 
     @Override
@@ -160,7 +222,7 @@ public class LandingPage extends Activity {
 
     }
 
-    public void loadFile(View view) {
+    public void loadFile(File imgFile) {
 //        Intent intent = new Intent(LandingPage.this, ImageLoad.class);
 //        startActivity(intent);
 
@@ -172,9 +234,16 @@ public class LandingPage extends Activity {
 //        folderLocation = "/storage/emulated/0/Download/nail.png"; // 1920px
 //        folderLocation = "/storage/emulated/0/Download/balsamic.png"; // 1920px
 
-        File imgFile = new File(folderLocation);
+//        mTask.execute();
 
+        filename = imgFile.getName();
+        int pos = filename.lastIndexOf(".");
+        if (pos > 0) {
+            filename = filename.substring(0, pos);
+        }
+        Log.e(TAG, "loadFile: FileName "+filename );
 
+//        File imgFile = new File(folderLocation);
 
         if (imgFile.exists()){
             FaceDetector fd = FaceDetector.getInstance();
@@ -216,7 +285,16 @@ public class LandingPage extends Activity {
                 // if face predicted, show the name to user
                 //
                 fr.onDrawView(c);
-                showPhoto(photo, fd.getDetectedFaceForDisplaying(), fr.getResult() +" "+ Math.round(fr.getConfidence()));
+
+                if (fr.getResult() == null){
+                    processImage(filename, fd.getDetectedFace());
+                }
+
+                logReport.saveLog(filename, fr.getResult(), fr.getConfidence());
+
+                //Display
+//                showPhoto(photo, c, fd.getDetectedFaceForDisplaying(), fr.getResult() +" "+ Math.round(fr.getConfidence()));
+//                processPhoto(photo);
 
             } else {
                 //
@@ -224,7 +302,7 @@ public class LandingPage extends Activity {
                 //
                 fr.clear();
             }
-            Toast.makeText(getApplicationContext(), "Load File Success : "+ fr.getResult(), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "Load File Success : "+ fr.getResult(), Toast.LENGTH_SHORT).show();
 
         } else {
             Log.e(TAG, "loadFile: "+"Image Not found" );
@@ -233,19 +311,23 @@ public class LandingPage extends Activity {
 
     }
 
-    private void showPhoto(Mat photo, Mat detectedFaceForDisplaying, String result) {
+
+    private void showPhoto(Mat photo, Canvas c, Mat detectedFaceForDisplaying, String result) {
 
         // Display Image for Result Detected Face(s)
+
         Mat tmp = new Mat (photo.height(), photo.width(), CvType.CV_8U, new Scalar(4));
         Mat tmpfaces = new Mat (detectedFaceForDisplaying.height(), detectedFaceForDisplaying.width(), CvType.CV_8U, new Scalar(4));
         try {
             Imgproc.cvtColor(photo, tmp, Imgproc.COLOR_RGB2BGRA);
             Mat faces = detectedFaceForDisplaying.submat(0, detectedFaceForDisplaying.height(), 0, detectedFaceForDisplaying.width());
-//            Core.flip(faces.t(), faces, 0);
-            Imgproc.cvtColor(faces, tmpfaces, Imgproc.COLOR_RGB2BGRA);
 
-//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2GRAY);
-//                Imgproc.cvtColor(image, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
+            // Flip/Mirror Image for Display
+            Core.flip(faces, faces, 1);
+
+            Imgproc.cvtColor(faces, tmpfaces, Imgproc.COLOR_RGB2BGRA);
+//            Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2GRAY);
+//            Imgproc.cvtColor(image, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
 
             mutableBitmap = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
             mutableBitmapFace = Bitmap.createBitmap(tmpfaces.cols(), tmpfaces.rows(), Bitmap.Config.ARGB_8888);
@@ -257,15 +339,21 @@ public class LandingPage extends Activity {
         }
 
 
-        imgDisp.setImageBitmap(mutableBitmap);
+        Bitmap bitmap = Bitmap.createBitmap(500, 500, Bitmap.Config.ARGB_8888);
+        c.drawBitmap(bitmap, 0, 0, null);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.BLACK);
+        c.drawCircle(50, 50, 10, paint);
+        imgDisp.setImageBitmap(bitmap);
+//        imgDisp.setImageDrawable(new BitmapDrawable(getResources(), mutableBitmap ));
         imgFace.setImageBitmap(mutableBitmapFace);
         tvFace.setText(result);
     }
 
-    private void processPhoto() {
-        image = Highgui.imread(folderLocation);
+    private void processPhoto(Mat image) {
+        // Detector
+        //
         String mCascadeFileName = "lppcascade.xml";
-
         File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
         File mCascadeFile = new File(cascadeDir, mCascadeFileName);
         CascadeClassifier mDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
@@ -287,7 +375,7 @@ public class LandingPage extends Activity {
 
         int i = 0;
         for (Rect rect : faces){
-            Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
+            Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(10, 255, 0));
 
             mDetectedFace = image.submat(
                     faces[i].y,
@@ -326,7 +414,8 @@ public class LandingPage extends Activity {
         tvFace.setText(filename);
     }
 
-    private void processImage() {
+    private void processImage(String filename, Mat mDetectedFace) {
+        Log.e(TAG, "processImage: "+ filename );
 
         WFaceRecognizer wfr = WFaceRecognizer.getInstance();
         WFRDataFactory factory = WFRDataFactory.getInstance();
@@ -353,7 +442,7 @@ public class LandingPage extends Activity {
 
 //        Mat mat = fd.getDetectedFace();
 
-        Log.e(TAG, "loadFile: "+ mDetectedFace.empty() );
+//        Log.e(TAG, "loadFile: "+ mDetectedFace.empty() );
         assert (mDetectedFace != null);
         // resize the image to normalized size.
         mDetectedFace = WhooTools.resize(mDetectedFace);
@@ -396,20 +485,21 @@ public class LandingPage extends Activity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        m_chosenDir = folderLocation;
+
+        tvLoc.setText(folderLocation);
+
         if (requestCode == FOLDER_PICKER_CODE && resultCode == Activity.RESULT_OK) {
 
             Log.e(TAG, "onActivityResult: "+ intent );
             folderLocation = intent.getExtras().getString("data");
             Log.i( "folderLocation", folderLocation );
 
-            tvLoc.setText(folderLocation);
-
         } else if (requestCode == FILE_PICKER_CODE && resultCode == Activity.RESULT_OK){
             Log.e(TAG, "onActivityResult: "+ intent );
             folderLocation = intent.getExtras().getString("data");
             Log.i( "folderLocation", folderLocation );
-
-            tvLoc.setText(folderLocation);
 
         }
     }
@@ -432,5 +522,94 @@ public class LandingPage extends Activity {
                     Log.e(TAG, "loadFile: "+ "SUCCESS writing image to external storage" );
                 else
                     Log.e(TAG, "Fail writing image to external storage");
+    }
+
+    private class BackgroundTask extends AsyncTask<String, Integer, List<RowItem>> {
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(LandingPage.this, "onPreExecute", Toast.LENGTH_LONG).show();
+            myProgress = 0;
+        }
+
+        @Override
+        protected void onPostExecute(List<RowItem> aVoid) {
+            Toast.makeText(LandingPage.this, "onPostExecute", Toast.LENGTH_LONG).show();
+            btLoadFile.setClickable(true);
+            mTask = null;
+        }
+
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//            while (myProgress<100){
+//                myProgress++;
+//                publishProgress(myProgress);
+//                SystemClock.sleep(100);
+//            }
+//            return null;
+//        }
+
+        int myProgress;
+        private Activity context;
+        List<RowItem> rowItems;
+        int noOfPaths;
+        private File[] list;
+
+        @Override
+        protected List<RowItem> doInBackground(String... urls){
+            noOfPaths = urls.length;
+            rowItems = new ArrayList<RowItem>();
+            Bitmap map;
+
+            Log.e(TAG, "doInBackground: "+noOfPaths );
+
+            String strDir = LandingPage.m_chosenDir;
+
+            if(strDir.isEmpty()){
+                Log.e(TAG, "doInBackground: "+"Directory Empty" );
+
+            } else {
+
+                File dir = new File(strDir);
+
+                list = dir.listFiles();
+
+                Log.e(TAG, "doInBackground: numfiles "+list.length );
+                Log.e(TAG, "doInBackground: files "+ Arrays.toString(list));
+
+                // Initialize Log Report File
+                logReport.initLogReport();
+
+                for (File f: list){
+
+                    loadFile(f);
+
+                    myProgress++;
+
+                    Log.e(TAG, "doInBackground: myProgress "+ myProgress );
+                    publishProgress(myProgress*100/list.length);
+//                    rowItems.add(new RowItem(map));
+
+                }
+
+                Log.e(TAG, "doInBackground: "+"saveLog to : "+ logReport.fileLog.toString()  );
+
+//                for (String url : urls) {
+//                    map = processPhoto(url);
+//                    Log.e(TAG, "doInBackground: ");
+//                rowItems.add(new RowItem(map));
+//                }
+            }
+            return rowItems;
+        }
+
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            pbar.setProgress(values[0]);
+            tv_percentage.setText(String.format("%s %%", values[0].toString()));
+            Log.e(TAG, "onProgressUpdate: values "+ values[0] );
+        }
     }
 }

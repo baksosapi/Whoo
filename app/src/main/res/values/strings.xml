@@ -8,4 +8,6 @@
     <string name="default_serverip">192.168.111.111</string>
     <string name="default_algoindex">2</string>
     <string name="imgDesc">Image Description</string>
+    <string name="percent_sign">%</string>
+    <string name="slash_sign">/</string>
 </resources>

@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btCamera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -15,11 +15,10 @@
         />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btLoadFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Load"
-        android:onClick="loadFile"
         android:layout_marginRight="12dp"
         android:layout_marginEnd="12dp"
         android:layout_marginTop="13dp"
@@ -35,7 +34,7 @@
         android:layout_marginTop="10dp"
         android:orientation="vertical"
         android:padding="15dp"
-        android:layout_below="@+id/button"
+        android:layout_below="@+id/btCamera"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         >
@@ -155,13 +154,14 @@
         android:layout_marginLeft="15dp"
         android:background="#ffffff"
         android:textSize="17sp"
-        android:layout_below="@+id/button"
+        android:layout_below="@+id/btCamera"
         android:id="@+id/textView4" />
 
     <ScrollView
+        android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button2"
+        android:layout_below="@+id/btLoadFile"
         android:layout_centerHorizontal="true"
         >
         <LinearLayout
@@ -197,5 +197,46 @@
         </LinearLayout>
     </ScrollView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/sv"
+        android:layout_margin="10dp"
+        >
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:id="@+id/progbar_h"
+            android:max="100"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_outof"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:text="@string/slash_sign"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_percentage"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:text="@string/percent_sign"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
