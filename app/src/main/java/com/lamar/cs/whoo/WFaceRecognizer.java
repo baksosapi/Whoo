@@ -523,7 +523,7 @@ public class WFaceRecognizer {
     }
     
     public void train() {
-        Log.e(TAG, "doTrain() train: start" );
+        Log.e(TAG, "train: mtraining called" );
         if (mTraining) {
             Log.e(TAG, "train: mtraining FALSE" );
             //
@@ -547,6 +547,8 @@ public class WFaceRecognizer {
             Log.e(TAG, "train: mtraining TRUE" );
             Thread thread = new Thread(new Trainer());
             thread.start();
+
+            Log.e(TAG, "train: is alive "+ thread.isAlive());
 
         }
     }

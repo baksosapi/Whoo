@@ -93,11 +93,11 @@ public class LandingPage extends Activity {
     RadioGroup rbgType, rbgAlg;
     private int chooseType;
     private String folderLocation;
-    Mat descriptors2,descriptors1;
+    Mat descriptors2, descriptors1;
     TextView tvFace, tv_percentage;
     Mat image;
-    Mat mDetectedFace ;
-    MatOfKeyPoint keypoints1,keypoints2;
+    Mat mDetectedFace;
+    MatOfKeyPoint keypoints1, keypoints2;
     FeatureDetector detector;
     DescriptorExtractor descriptor;
     DescriptorMatcher matcher;
@@ -106,7 +106,7 @@ public class LandingPage extends Activity {
     DrawView mTargetView;
     private Bitmap mutableBitmap, mutableBitmapFace;
     private String filename;
-//    private FaceRecognizer mReadable;
+    //    private FaceRecognizer mReadable;
     private String mPredictResult;
     ProgressBar pbar;
 
@@ -116,7 +116,7 @@ public class LandingPage extends Activity {
     private WFaceRecognizer wfr;
 
     @Override
-    protected void onCreate(Bundle savedInstanceBundle){
+    protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_landing);
 
@@ -141,8 +141,8 @@ public class LandingPage extends Activity {
 
         imgDisp = (ImageView) findViewById(R.id.imgDisp);
         imgFace = (ImageView) findViewById(R.id.imgDispFace);
-        tvFace = (TextView) findViewById(R.id.tvFace) ;
-        tv_percentage = (TextView) findViewById(R.id.tv_percentage) ;
+        tvFace = (TextView) findViewById(R.id.tvFace);
+        tv_percentage = (TextView) findViewById(R.id.tv_percentage);
 //        imgDisp = (ImageView) findViewById(R.id.draw_view);
 //        dirLoc.setInputType(InputType.TYPE_NULL);
 //        dirLoc.setKeyListener(null);
@@ -154,17 +154,17 @@ public class LandingPage extends Activity {
     }
 
     private void initListener() {
-        final AlertDialog.Builder builder= new AlertDialog.Builder(LandingPage.this);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(LandingPage.this);
 
         rbgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
 //                Log.e(TAG, "onCheckedChanged: "+ checkedId);
-                if (checkedId == R.id.rbDir){
-                    Log.e(TAG, "onCheckedChanged: "+ "Directory" );
+                if (checkedId == R.id.rbDir) {
+                    Log.e(TAG, "onCheckedChanged: " + "Directory");
                     chooseType = 1;
-                } else if (checkedId == R.id.rbFile){
-                    Log.e(TAG, "onCheckedChanged: "+ "File" );
+                } else if (checkedId == R.id.rbFile) {
+                    Log.e(TAG, "onCheckedChanged: " + "File");
                     chooseType = 0;
                 }
             }
@@ -174,36 +174,45 @@ public class LandingPage extends Activity {
             @Override
             public void onClick(View v) {
 
-                m_chosenDir = String.valueOf(
-                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM+"/SID"));
+                if (folderLocation == null) {
 
-                Log.e(TAG, "onClick: "+new File(m_chosenDir).exists() );
-                if(new File(m_chosenDir).exists() && !LandingPage.m_chosenDir.isEmpty()) {
+                    builder.setTitle("Directory didn't selected?");
+                    builder.setMessage("Operation aborted, please Select Directory or 'OK' to default directory.");
+                            m_chosenDir = String.valueOf(
+                                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
+                    builder.setPositiveButton("OK", eksekusi());
+                    builder.setNegativeButton("CANCEL", null);
+                    builder.show();
+                    Log.e(TAG, "onClick: " + new File(m_chosenDir).exists());
+                } else {
+                    m_chosenDir = folderLocation;
+                }
+
+                if (new File(m_chosenDir).exists() && !LandingPage.m_chosenDir.isEmpty()) {
 
                     // Execution main process
 //                    task.execute();
-                    if (mTask == null){
+                    if (mTask == null) {
                         mTask = new BackgroundTask();
                     }
                     mTask.execute();
 //                    mTask = (BackgroundTask) new BackgroundTask().execute();
 //                    btn_start.setClickable(false);
                     Toast.makeText(LandingPage.this, "Mode : Batch Mode ", Toast.LENGTH_SHORT).show();
-                } else {
-                    builder.setTitle("Directory didn't selected?");
-                    builder.setMessage("Operation aborted, please Select Directory or 'OK' to default directory.");
-                    builder.setPositiveButton("OK", (DialogInterface.OnClickListener) mTask.execute());
-                    builder.setNegativeButton("CANCEL", null);
-                    builder.show();
-
                 }
 
             }
         });
     }
 
+    private DialogInterface.OnClickListener eksekusi() {
+        Log.e(TAG, "eksekusi: " );
+        mTask.execute();
+        return null;
+    }
+
     @Override
-    protected void onPause(){
+    protected void onPause() {
         Log.d(TAG, "onPause() called.");
 
         super.onPause();
@@ -222,12 +231,12 @@ public class LandingPage extends Activity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
     }
 
@@ -259,11 +268,11 @@ public class LandingPage extends Activity {
         if (pos > 0) {
             filename = filename.substring(0, pos);
         }
-        Log.e(TAG, "loadFile: FileName "+filename );
+        Log.e(TAG, "loadFile: FileName " + filename);
 
 //        File imgFile = new File(folderLocation);
 
-        if (imgFile.exists()){
+        if (imgFile.exists()) {
             FaceDetector fd = FaceDetector.getInstance();
             wfr = WFaceRecognizer.getInstance();
 
@@ -307,14 +316,19 @@ public class LandingPage extends Activity {
                 String nameResult = wfr.getResult();
                 Double matchingScore = wfr.getConfidence();
 
-                if (nameResult == null){
+                Log.e(TAG, "loadFile: nameResult " + nameResult + " confidence: " + matchingScore);
+
+                if (nameResult == null) {
                     nameResult = "anonym";
-                    processImage(filename, fd.getDetectedFace());
+
+//                    processImage(filename, fd.getDetectedFace());
+
                 }
+//                processImage(filename, fd.getDetectedFace());
 
 //                if (matchingScore == null) matchingScore = 0d;
 
-                logReport.saveLog(filename, nameResult, matchingScore);
+//                logReport.saveLog(filename, nameResult, matchingScore);
 
                 //Display
 //                showPhoto(photo, c, fd.getDetectedFaceForDisplaying(), fr.getResult() +" "+ Math.round(fr.getConfidence()));
@@ -329,7 +343,7 @@ public class LandingPage extends Activity {
 //            Toast.makeText(getApplicationContext(), "Load File Success : "+ fr.getResult(), Toast.LENGTH_SHORT).show();
 
         } else {
-            Log.e(TAG, "loadFile: "+"Image Not found" );
+            Log.e(TAG, "loadFile: " + "Image Not found");
         }
     }
 
@@ -337,8 +351,8 @@ public class LandingPage extends Activity {
 
         // Display Image for Result Detected Face(s)
 
-        Mat tmp = new Mat (photo.height(), photo.width(), CvType.CV_8U, new Scalar(4));
-        Mat tmpfaces = new Mat (detectedFaceForDisplaying.height(), detectedFaceForDisplaying.width(), CvType.CV_8U, new Scalar(4));
+        Mat tmp = new Mat(photo.height(), photo.width(), CvType.CV_8U, new Scalar(4));
+        Mat tmpfaces = new Mat(detectedFaceForDisplaying.height(), detectedFaceForDisplaying.width(), CvType.CV_8U, new Scalar(4));
         try {
             Imgproc.cvtColor(photo, tmp, Imgproc.COLOR_RGB2BGRA);
             Mat faces = detectedFaceForDisplaying.submat(0, detectedFaceForDisplaying.height(), 0, detectedFaceForDisplaying.width());
@@ -355,8 +369,8 @@ public class LandingPage extends Activity {
             Utils.matToBitmap(tmp, mutableBitmap);
             Utils.matToBitmap(tmpfaces, mutableBitmapFace);
 
-        } catch (CvException e){
-            Log.d("Exception",e.getMessage());
+        } catch (CvException e) {
+            Log.d("Exception", e.getMessage());
         }
 
 
@@ -382,7 +396,7 @@ public class LandingPage extends Activity {
         MatOfRect faceDetection = new MatOfRect();
         mDetector.detectMultiScale(image, faceDetection);
 
-        Log.e(TAG, String.format("loadFile: "+"Detected %s faces", faceDetection.toArray().length ));
+        Log.e(TAG, String.format("loadFile: " + "Detected %s faces", faceDetection.toArray().length));
 
         // Get Name of file
         filename = new File(folderLocation).getName();
@@ -395,7 +409,7 @@ public class LandingPage extends Activity {
         Rect[] faces = faceDetection.toArray();
 
         int i = 0;
-        for (Rect rect : faces){
+        for (Rect rect : faces) {
             Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(10, 255, 0));
 
             mDetectedFace = image.submat(
@@ -409,12 +423,12 @@ public class LandingPage extends Activity {
 //                SaveImage(image);
         }
 
-        Log.e(TAG, "loadFile: "+ mDetectedFace.toString() );
+        Log.e(TAG, "loadFile: " + mDetectedFace.toString());
 //            ShowImage();
 
         // Display Image for Result Detected Face(s)
-        Mat tmp = new Mat (image.height(), image.width(), CvType.CV_8U, new Scalar(4));
-        Mat tmpfaces = new Mat (image.height(), image.width(), CvType.CV_8U, new Scalar(4));
+        Mat tmp = new Mat(image.height(), image.width(), CvType.CV_8U, new Scalar(4));
+        Mat tmpfaces = new Mat(image.height(), image.width(), CvType.CV_8U, new Scalar(4));
         try {
             Imgproc.cvtColor(image, tmp, Imgproc.COLOR_RGB2BGRA);
             Mat mImageGray = mDetectedFace.submat(0, mDetectedFace.height(), 0, mDetectedFace.width());
@@ -427,8 +441,8 @@ public class LandingPage extends Activity {
             Utils.matToBitmap(tmp, mutableBitmap);
             Utils.matToBitmap(tmpfaces, mutableBitmapFace);
 
-        } catch (CvException e){
-            Log.d("Exception",e.getMessage());
+        } catch (CvException e) {
+            Log.d("Exception", e.getMessage());
         }
         imgDisp.setImageBitmap(mutableBitmap);
         imgFace.setImageBitmap(mutableBitmapFace);
@@ -437,12 +451,12 @@ public class LandingPage extends Activity {
 
     private void processImage(String filename, Mat mDetectedFace) {
 
+        Log.e(TAG, "processImage: " + "called");
         wfr = WFaceRecognizer.getInstance();
         WFRDataFactory factory = WFRDataFactory.getInstance();
         LocalNameList lnlist = LocalNameList.getInstance();
 
 //        String instr = filename;
-        Log.e(TAG, "processImage: input name "+ filename );
         lnlist.inputLocalName(filename);
         int index = lnlist.findExistNameLocation(filename);
         if (-1 == index) {
@@ -465,7 +479,6 @@ public class LandingPage extends Activity {
         // resize the image to normalized size.
         mDetectedFace = WhooTools.resize(mDetectedFace);
 
-        Log.e(TAG, "processImage: resize" );
         boolean ret = person.addFaceImage(mDetectedFace);
         if (!ret) {
             Log.e(TAG, "Add Image Failed, WHY?");
@@ -473,14 +486,14 @@ public class LandingPage extends Activity {
             return;
         } else {
             WhooConfig.DBG(LandingPage.this, "A face image added for " + name + " !");
-            Log.e(TAG, "processImage: "+ "A face image added for " + name + " !" );
+            Log.e(TAG, "processImage: " + "A face image added for " + name + " !");
         }
 
         // call wfr.train() now, maybe it will run later on.
-        Log.e(TAG, "processImage: train next" );
+        Log.e(TAG, "processImage: train next");
         wfr.train();
 
-        Log.e(TAG, "processImage: " );
+        Log.e(TAG, "processImage: ");
 
 //        if(thread.getState()!=Thread.State.TERMINATED){ }
 
@@ -492,13 +505,13 @@ public class LandingPage extends Activity {
     public void setLocation(View view) {
         int picker_code = 100;
 
-        Log.e(TAG, "setLocation: "+ chooseType );
+        Log.e(TAG, "setLocation: " + chooseType);
         Intent intent = new Intent(this, FolderPicker.class);
 //        startActivityForResult(intent, FOLDER_PICKER_CODE);
 
-        if (chooseType == 1){
+        if (chooseType == 1) {
             startActivityForResult(intent, FOLDER_PICKER_CODE);
-        } else if (chooseType == 0){
+        } else if (chooseType == 0) {
             intent.putExtra("title", "Select file to upload");
             intent.putExtra("location", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
             intent.putExtra("pickFiles", true);
@@ -512,40 +525,41 @@ public class LandingPage extends Activity {
 
         m_chosenDir = folderLocation;
 
-        tvLoc.setText(folderLocation);
 
         if (requestCode == FOLDER_PICKER_CODE && resultCode == Activity.RESULT_OK) {
 
-            Log.e(TAG, "onActivityResult: "+ intent );
+            Log.e(TAG, "onActivityResult: " + intent);
             folderLocation = intent.getExtras().getString("data");
-            Log.i( "folderLocation", folderLocation );
+            Log.i("folderLocation", folderLocation);
+            tvLoc.setText(folderLocation);
 
-        } else if (requestCode == FILE_PICKER_CODE && resultCode == Activity.RESULT_OK){
-            Log.e(TAG, "onActivityResult: "+ intent );
+        } else if (requestCode == FILE_PICKER_CODE && resultCode == Activity.RESULT_OK) {
+            Log.e(TAG, "onActivityResult: " + intent);
             folderLocation = intent.getExtras().getString("data");
-            Log.i( "folderLocation", folderLocation );
+            Log.i("folderLocation", folderLocation);
+            tvLoc.setText(folderLocation);
 
         }
     }
 
-    public void SaveImage (Mat image) {
-                Boolean bool = null;
-                String newfilename = "faceDetection.png";
+    public void SaveImage(Mat image) {
+        Boolean bool = null;
+        String newfilename = "faceDetection.png";
 
-                File path = new File(Environment.getExternalStorageDirectory() + "/Images/");
-                path.mkdirs();
+        File path = new File(Environment.getExternalStorageDirectory() + "/Images/");
+        path.mkdirs();
 
-                File file = new File(path, "image.png");
-                afilename = file.toString();
+        File file = new File(path, "image.png");
+        afilename = file.toString();
 
-                bool = Highgui.imwrite(afilename, image);
+        bool = Highgui.imwrite(afilename, image);
 
-                System.out.println(String.format("Writing %s", newfilename));
+        System.out.println(String.format("Writing %s", newfilename));
 
-                if (bool)
-                    Log.e(TAG, "loadFile: "+ "SUCCESS writing image to external storage" );
-                else
-                    Log.e(TAG, "Fail writing image to external storage");
+        if (bool)
+            Log.e(TAG, "loadFile: " + "SUCCESS writing image to external storage");
+        else
+            Log.e(TAG, "Fail writing image to external storage");
     }
 
     private class BackgroundTask extends AsyncTask<String, Integer, List<RowItem>> {
@@ -580,54 +594,54 @@ public class LandingPage extends Activity {
         private File[] list;
 
         @Override
-        protected List<RowItem> doInBackground(String... urls){
+        protected List<RowItem> doInBackground(String... urls) {
             noOfPaths = urls.length;
             rowItems = new ArrayList<RowItem>();
-            Bitmap map;
 
-            Log.e(TAG, "doInBackground: "+noOfPaths );
+            Log.e(TAG, "doInBackground: " + noOfPaths);
 
             String strDir = LandingPage.m_chosenDir;
 
-            if(strDir.isEmpty()){
-                Log.e(TAG, "doInBackground: "+"Directory Empty" );
+            if (new File(strDir).isDirectory()) {
 
-            } else {
+                if (strDir.isEmpty()) {
+                    Log.e(TAG, "doInBackground: " + "Directory Empty");
 
-                File dir = new File(strDir);
+                } else {
 
-                list = dir.listFiles();
+                    File dir = new File(strDir);
 
-                Log.e(TAG, "doInBackground: numfiles "+list.length );
-                Log.e(TAG, "doInBackground: files "+ Arrays.toString(list));
+                    list = dir.listFiles();
 
-                // Initialize Log Report File
-                logReport.initLogReport();
+                    Log.e(TAG, "doInBackground: numfiles " + list.length);
+                    Log.e(TAG, "doInBackground: files " + Arrays.toString(list));
 
-                for (File f: list){
+                    // Initialize Log Report File
+//                logReport.initLogReport();
 
-                    loadFile(f);
+                    for (File f : list) {
 
-                    myProgress++;
+                        loadFile(f);
 
-                    Log.e(TAG, "doInBackground: train myProgress "+ myProgress );
-                    publishProgress(myProgress*100/list.length);
+                        myProgress++;
+
+                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
+                        publishProgress(myProgress * 100 / list.length);
 //                    rowItems.add(new RowItem(map));
 
+                    }
+
+                    WFRDataFactory.getInstance().flush();
+                    Settings.getInstance().sync();
+                    LocalNameList.getInstance().store();
+
+                    Log.e(TAG, "doInBackground: " + "saveLog to : " + logReport.fileLog.toString());
+
                 }
-
-                WFRDataFactory.getInstance().flush();
-                Settings.getInstance().sync();
-                LocalNameList.getInstance().store();
-
-                Log.e(TAG, "doInBackground: "+"saveLog to : "+ logReport.fileLog.toString()  );
-
-//                for (String url : urls) {
-//                    map = processPhoto(url);
-//                    Log.e(TAG, "doInBackground: ");
-//                rowItems.add(new RowItem(map));
-//                }
+            } else {
+                loadFile(new File(strDir));
             }
+
             return rowItems;
         }
 
@@ -637,7 +651,7 @@ public class LandingPage extends Activity {
             super.onProgressUpdate(values);
             pbar.setProgress(values[0]);
             tv_percentage.setText(String.format("%s %%", values[0].toString()));
-            Log.e(TAG, "onProgressUpdate: values "+ values[0] );
+            Log.e(TAG, "onProgressUpdate: values " + values[0]);
         }
     }
 }
