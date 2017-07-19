@@ -19,7 +19,7 @@ class LogReport {
     SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy-hhmmss") ;
     String path = Environment.getExternalStorageDirectory().toString();
     File dirLog = new File(path + "/OCVReportFR");
-    public File fileLog = new File(dirLog, "OCVFaceData"+ dateFormat.format(date) +".csv");
+    public File fileLog = new File(dirLog, "OCVFaceData"+ dateFormat.format(date) +".txt");
     BufferedWriter bufw;
 
     //    public void saveLog(String name, int[] intBitmap, byte[] bytes) {

@@ -66,7 +66,7 @@ public class WhooConfig {
     public static final String ABOUT_ME = "https://www.linkedin.com/in/shaomin-zhang-0ba60667";
 
     public static void DBG(Context context, String text) {
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+//        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
     }
 
     public static void DBG(String text) {

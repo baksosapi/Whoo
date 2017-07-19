@@ -34,12 +34,12 @@ import org.opencv.android.OpenCVLoader;
 import sid.LandingPage;
 
 public class WelcomeActivity extends Activity {
-    
+
     private final String TAG = "whoo";
 
-	private final int MSG_FINISH_ACTIVITY = 1;
-	private final int MSG_INSTALL_OPENCV  = 2;
-    
+    private final int MSG_FINISH_ACTIVITY = 1;
+    private final int MSG_INSTALL_OPENCV = 2;
+
     private Timer timer = new Timer();
     private TimerTask task = new TimerTask() {
         @Override
@@ -53,36 +53,36 @@ public class WelcomeActivity extends Activity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-				case MSG_FINISH_ACTIVITY:
-	                if (Settings.getInstance().isOpenCVInited()) {
-	                    if (timer != null) {
-	                        timer.cancel();
-	                        timer = null;
-	                    }
-	                    
-	                    Log.e(TAG, "Since Inits are done, timer invokes next Activity!");
-	                    
-//	                    Intent intent = new Intent(WelcomeActivity.this, MainActivity2.class);
-	                    Intent intent = new Intent(WelcomeActivity.this, LandingPage.class);
-	                    startActivity(intent);
-	                    //
-	                    // since it is an welcome window, it should be seen 
-	                    // only once and never come back again.
-	                    //
-	                    WelcomeActivity.this.finish();
-	                } else {
-	                    Log.e(TAG, "what? initializations cost too long time!");
-	                }
-					break;
+                case MSG_FINISH_ACTIVITY:
+                    if (Settings.getInstance().isOpenCVInited()) {
+                        if (timer != null) {
+                            timer.cancel();
+                            timer = null;
+                        }
 
-				case MSG_INSTALL_OPENCV:
-					// Init OpenCV and other data-loading related..
+                        Log.e(TAG, "Since Inits are done, timer invokes next Activity!");
+
+//	                    Intent intent = new Intent(WelcomeActivity.this, MainActivity2.class);
+                        Intent intent = new Intent(WelcomeActivity.this, LandingPage.class);
+                        startActivity(intent);
+                        //
+                        // since it is an welcome window, it should be seen
+                        // only once and never come back again.
+                        //
+                        WelcomeActivity.this.finish();
+                    } else {
+                        Log.e(TAG, "what? initializations cost too long time!");
+                    }
+                    break;
+
+                case MSG_INSTALL_OPENCV:
+                    // Init OpenCV and other data-loading related..
                     OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_3, WelcomeActivity.this.getApplicationContext(), mLoaderCallback);
-					break;
-					
-				default:
-					super.handleMessage(msg);
-					break;
+                    break;
+
+                default:
+                    super.handleMessage(msg);
+                    break;
             }
         }
     };
@@ -97,36 +97,36 @@ public class WelcomeActivity extends Activity {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.e(TAG, "OpenCV loaded successfully");
 
-                        // Load native library after(!) OpenCV initialization
-                        System.loadLibrary("facerec");
-                        Log.e(TAG, "libfacerec.so loaded successfully");
+                    // Load native library after(!) OpenCV initialization
+                    System.loadLibrary("facerec");
+                    Log.e(TAG, "libfacerec.so loaded successfully");
 
-                        // it has to be placed here.. (need init of opencv)
-                        WFRDataFactory.getInstance().load();
-                        Log.i(TAG, "WFR data loaded.");
+                    // it has to be placed here.. (need init of opencv)
+                    WFRDataFactory.getInstance().load();
+                    Log.i(TAG, "WFR data loaded.");
 
                     FaceDetector fd = FaceDetector.getInstance();
-                        fd.setContext(WelcomeActivity.this);
-                        fd.init();
-                        Log.i(TAG, "fd inited.");
-                        Log.e(TAG, "fd inited.");
+                    fd.setContext(WelcomeActivity.this);
+                    fd.init();
+                    Log.i(TAG, "fd inited.");
+                    Log.e(TAG, "fd inited.");
 
-                        WFaceRecognizer wfr = WFaceRecognizer.getInstance();
-                        wfr.setContext(WelcomeActivity.this);
-                        wfr.init();
-                        Log.i(TAG, "fr inited.");
+                    WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+                    wfr.setContext(WelcomeActivity.this);
+                    wfr.init();
+                    Log.i(TAG, "fr inited.");
 
-                        // OpenCV inited.
-                        Settings.getInstance().onOpenCVInited();
+                    // OpenCV inited.
+                    Settings.getInstance().onOpenCVInited();
 
-                        WhooLog.d("Whoo's initiliazitions end, cost=" + WhooTools.endTickCount() + "ms.");
+                    WhooLog.d("Whoo's initiliazitions end, cost=" + WhooTools.endTickCount() + "ms.");
 
-                        Log.i(TAG, "now, all initilizations are done!");
-                    }
-                     break;
+                    Log.i(TAG, "now, all initilizations are done!");
+                }
+                break;
 
                 default:
-                    Log.e(TAG, "onManagerConnected: "+ "default" );
+                    Log.e(TAG, "onManagerConnected: " + "default");
                     super.onManagerConnected(status);
                     break;
             }
@@ -150,7 +150,7 @@ public class WelcomeActivity extends Activity {
             public void run() {
                 timer0.cancel();
 
-				// Init Log module.
+                // Init Log module.
                 WhooLog.open(WelcomeActivity.this);
 
                 // Start detecting time cost of inits.
@@ -170,18 +170,18 @@ public class WelcomeActivity extends Activity {
                 LocalNameList.getInstance().setContext(WelcomeActivity.this);
                 LocalNameList.getInstance().load();
 
-				// Init OpenCV and other data-loading related..
-				// But this has to be done in the main thread!!
-				Message message = new Message();
-	            message.what = MSG_INSTALL_OPENCV;
-	            handler.sendMessage(message);
+                // Init OpenCV and other data-loading related..
+                // But this has to be done in the main thread!!
+                Message message = new Message();
+                message.what = MSG_INSTALL_OPENCV;
+                handler.sendMessage(message);
             }
         }, 300, 100);
 
         // Let the timer check if the initilizations are done or not every 1000 ms.
         timer.schedule(task, 500, 3000);
     }
-    
+
     @Override
     protected void onDestroy() {
         if (timer != null) {

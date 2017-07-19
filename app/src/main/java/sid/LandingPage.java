@@ -31,6 +31,7 @@ import com.lamar.cs.whoo.FaceDetector;
 import com.lamar.cs.whoo.LocalNameList;
 import com.lamar.cs.whoo.MainActivity2;
 import com.lamar.cs.whoo.R;
+import com.lamar.cs.whoo.Settings;
 import com.lamar.cs.whoo.WFRDataFactory;
 import com.lamar.cs.whoo.WFRFaceImage;
 import com.lamar.cs.whoo.WFRPerson;
@@ -112,6 +113,7 @@ public class LandingPage extends Activity {
     private BackgroundTask mTask;
     private static String m_chosenDir = "";
     LogReport logReport = new LogReport();
+    private WFaceRecognizer wfr;
 
     @Override
     protected void onCreate(Bundle savedInstanceBundle){
@@ -145,10 +147,10 @@ public class LandingPage extends Activity {
 //        dirLoc.setInputType(InputType.TYPE_NULL);
 //        dirLoc.setKeyListener(null);
 
-
         tvLoc.setText("No Location selected");
 
         initListener();
+
     }
 
     private void initListener() {
@@ -202,7 +204,21 @@ public class LandingPage extends Activity {
 
     @Override
     protected void onPause(){
+        Log.d(TAG, "onPause() called.");
+
         super.onPause();
+
+        if (isFinishing()) {
+            //
+            // Exit by user pressing KEY_BACK.
+            //
+//            Settings.getInstance().sync();
+//            LocalNameList.getInstance().store();
+            //FaceDetector.getInstance().destroy();
+            WhooLog.close();
+        } else {
+            // Exit for other reasons.
+        }
     }
 
     @Override
@@ -227,7 +243,7 @@ public class LandingPage extends Activity {
 //        startActivity(intent);
 
 //        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
-        folderLocation = "/storage/emulated/0/Download/lena.png"; // 512px
+//        folderLocation = "/storage/emulated/0/Download/lena.png"; // 512px
 //        folderLocation = "/storage/emulated/0/Download/image2.jpg"; // 1024px
 //        folderLocation = "/storage/emulated/0/Download/scarlett_johansson.png"; // 1920px
 //        folderLocation = "/storage/emulated/0/Download/10006868.jpg"; // 1920px
@@ -235,6 +251,8 @@ public class LandingPage extends Activity {
 //        folderLocation = "/storage/emulated/0/Download/balsamic.png"; // 1920px
 
 //        mTask.execute();
+
+        String fileLoc = imgFile.toString();
 
         filename = imgFile.getName();
         int pos = filename.lastIndexOf(".");
@@ -247,18 +265,18 @@ public class LandingPage extends Activity {
 
         if (imgFile.exists()){
             FaceDetector fd = FaceDetector.getInstance();
-            WFaceRecognizer fr = WFaceRecognizer.getInstance();
+            wfr = WFaceRecognizer.getInstance();
 
             // Init detector Proses Image
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inScaled = false;
             options.inMutable = true;
-            Bitmap b = BitmapFactory.decodeFile(folderLocation, options);
+            Bitmap b = BitmapFactory.decodeFile(fileLoc, options);
 
             Canvas c = new Canvas(b);
             fd.setResolution(b.getWidth(), b.getHeight());
 //            fd.lock();
-            Mat photo = Highgui.imread(folderLocation);
+            Mat photo = Highgui.imread(fileLoc);
             // Get Bytes of Image
 //            File file = new File(folderLocation);
 //            int size = (int) file.length();
@@ -284,13 +302,19 @@ public class LandingPage extends Activity {
                 //
                 // if face predicted, show the name to user
                 //
-                fr.onDrawView(c);
+                wfr.onDrawView(c);
 
-                if (fr.getResult() == null){
+                String nameResult = wfr.getResult();
+                Double matchingScore = wfr.getConfidence();
+
+                if (nameResult == null){
+                    nameResult = "anonym";
                     processImage(filename, fd.getDetectedFace());
                 }
 
-                logReport.saveLog(filename, fr.getResult(), fr.getConfidence());
+//                if (matchingScore == null) matchingScore = 0d;
+
+                logReport.saveLog(filename, nameResult, matchingScore);
 
                 //Display
 //                showPhoto(photo, c, fd.getDetectedFaceForDisplaying(), fr.getResult() +" "+ Math.round(fr.getConfidence()));
@@ -300,17 +324,14 @@ public class LandingPage extends Activity {
                 //
                 // otherwise, clear the previous results
                 //
-                fr.clear();
+                wfr.clear();
             }
 //            Toast.makeText(getApplicationContext(), "Load File Success : "+ fr.getResult(), Toast.LENGTH_SHORT).show();
 
         } else {
             Log.e(TAG, "loadFile: "+"Image Not found" );
         }
-
-
     }
-
 
     private void showPhoto(Mat photo, Canvas c, Mat detectedFaceForDisplaying, String result) {
 
@@ -415,14 +436,13 @@ public class LandingPage extends Activity {
     }
 
     private void processImage(String filename, Mat mDetectedFace) {
-        Log.e(TAG, "processImage: "+ filename );
 
-        WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+        wfr = WFaceRecognizer.getInstance();
         WFRDataFactory factory = WFRDataFactory.getInstance();
         LocalNameList lnlist = LocalNameList.getInstance();
 
 //        String instr = filename;
-        Log.e(TAG, "processImage: "+ filename );
+        Log.e(TAG, "processImage: input name "+ filename );
         lnlist.inputLocalName(filename);
         int index = lnlist.findExistNameLocation(filename);
         if (-1 == index) {
@@ -440,13 +460,12 @@ public class LandingPage extends Activity {
             return;
         }
 
-//        Mat mat = fd.getDetectedFace();
-
-//        Log.e(TAG, "loadFile: "+ mDetectedFace.empty() );
         assert (mDetectedFace != null);
+
         // resize the image to normalized size.
         mDetectedFace = WhooTools.resize(mDetectedFace);
 
+        Log.e(TAG, "processImage: resize" );
         boolean ret = person.addFaceImage(mDetectedFace);
         if (!ret) {
             Log.e(TAG, "Add Image Failed, WHY?");
@@ -457,11 +476,16 @@ public class LandingPage extends Activity {
             Log.e(TAG, "processImage: "+ "A face image added for " + name + " !" );
         }
 
-        // call FR.train() now, maybe it will run later on.
+        // call wfr.train() now, maybe it will run later on.
+        Log.e(TAG, "processImage: train next" );
         wfr.train();
 
+        Log.e(TAG, "processImage: " );
+
+//        if(thread.getState()!=Thread.State.TERMINATED){ }
+
         // let the faceActivity exit
-//            FaceActivity.this.finish();
+//            LandingPage.this.finish();
 
     }
 
@@ -528,13 +552,13 @@ public class LandingPage extends Activity {
 
         @Override
         protected void onPreExecute() {
-            Toast.makeText(LandingPage.this, "onPreExecute", Toast.LENGTH_LONG).show();
+//            Toast.makeText(LandingPage.this, "onPreExecute", Toast.LENGTH_LONG).show();
             myProgress = 0;
         }
 
         @Override
         protected void onPostExecute(List<RowItem> aVoid) {
-            Toast.makeText(LandingPage.this, "onPostExecute", Toast.LENGTH_LONG).show();
+//            Toast.makeText(LandingPage.this, "onPostExecute", Toast.LENGTH_LONG).show();
             btLoadFile.setClickable(true);
             mTask = null;
         }
@@ -586,11 +610,15 @@ public class LandingPage extends Activity {
 
                     myProgress++;
 
-                    Log.e(TAG, "doInBackground: myProgress "+ myProgress );
+                    Log.e(TAG, "doInBackground: train myProgress "+ myProgress );
                     publishProgress(myProgress*100/list.length);
 //                    rowItems.add(new RowItem(map));
 
                 }
+
+                WFRDataFactory.getInstance().flush();
+                Settings.getInstance().sync();
+                LocalNameList.getInstance().store();
 
                 Log.e(TAG, "doInBackground: "+"saveLog to : "+ logReport.fileLog.toString()  );
 

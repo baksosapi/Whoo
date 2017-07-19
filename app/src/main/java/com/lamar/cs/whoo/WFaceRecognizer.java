@@ -523,7 +523,9 @@ public class WFaceRecognizer {
     }
     
     public void train() {
+        Log.e(TAG, "doTrain() train: start" );
         if (mTraining) {
+            Log.e(TAG, "train: mtraining FALSE" );
             //
             // a timer machanism works here if there are two frequent 
             // face recognition requests. 
@@ -539,9 +541,13 @@ public class WFaceRecognizer {
                     }
                 }
             }, 0, 8 * 1000);
+
+
         } else {
+            Log.e(TAG, "train: mtraining TRUE" );
             Thread thread = new Thread(new Trainer());
             thread.start();
+
         }
     }
 }
