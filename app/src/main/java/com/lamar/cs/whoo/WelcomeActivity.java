@@ -32,6 +32,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
 import sid.LandingPage;
+import sid.gallery.Main3Activity;
 
 public class WelcomeActivity extends Activity {
 
@@ -64,6 +65,7 @@ public class WelcomeActivity extends Activity {
 
 //	                    Intent intent = new Intent(WelcomeActivity.this, MainActivity2.class);
                         Intent intent = new Intent(WelcomeActivity.this, LandingPage.class);
+//                        Intent intent = new Intent(WelcomeActivity.this, Main3Activity.class);
                         startActivity(intent);
                         //
                         // since it is an welcome window, it should be seen

@@ -287,7 +287,7 @@ public class FaceDetector {
 
         mDetector.detectMultiScale(mImageGray, mats, 1.1, 2, 2,
                 new Size(faceSize, faceSize), new Size());
-        Log.e(TAG, String.format("loadFile: "+"Detected %s faces", mats.toArray().length ));
+        Log.e(TAG, String.format("loadFile: "+"Detected: %s faces", mats.toArray().length ));
 
         //
         // draw rects around the faces if found

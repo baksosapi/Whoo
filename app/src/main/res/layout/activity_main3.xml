@@ -1,9 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sid.gallery.Main3Activity">
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/action_load_dir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/backwithborder"
+        android:drawableLeft="@drawable/ic_photo_library_white_24dp"
+        android:drawableStart="@drawable/ic_photo_library_white_24dp"
+        android:padding="5dp"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp"
+        android:text="@string/action_load_dir"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/folder_uri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_addrecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_record" />
+
+        <RadioButton
+            android:id="@+id/rb_identify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/identify_record" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/start_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_start_load" />
+
+        <Button
+            android:id="@+id/pause_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_pause_load" />
+
+        <Button
+            android:id="@+id/stop_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_stop_load" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progbar_h"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_percentage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="@string/percent_sign" />
+
+        <TextView
+            android:id="@+id/tv_outof"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@string/slash_sign" />
+    </RelativeLayout>
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <!--<Button-->
+    <!--android:id="@+id/bt_loadTest"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_centerVertical="true"-->
+    <!--android:text="Test Load I" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/bt_bar"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@+id/bt_loadTest"-->
+    <!--android:layout_centerHorizontal="true"-->
+    <!--android:layout_marginTop="33dp"-->
+    <!--android:text="Bar" />-->
+
+    <!--<ProgressBar-->
+
+    <!--android:id="@+id/progressBar2"-->
+
+    <!--style="?android:attr/progressBarStyleHorizontal"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:progressDrawable="@drawable/vertical_progress_bar"/>-->
+    <!--</RelativeLayout>-->
+    <TextView
+        android:id="@+id/tv_guidance"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ListView
+        android:id="@+id/lv_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

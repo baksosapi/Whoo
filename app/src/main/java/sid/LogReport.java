@@ -13,7 +13,7 @@ import java.util.Date;
  * Created by sid on 7/18/17.
  */
 
-class LogReport {
+public class LogReport {
 
     Date date = new Date() ;
     SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy-hhmmss") ;

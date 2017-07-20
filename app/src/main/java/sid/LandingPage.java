@@ -115,7 +115,6 @@ public class LandingPage extends Activity {
     LogReport logReport = new LogReport();
     private WFaceRecognizer wfr;
 
-    @Override
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
         setContentView(R.layout.activity_landing);
@@ -153,65 +152,6 @@ public class LandingPage extends Activity {
 
     }
 
-    private void initListener() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(LandingPage.this);
-
-        rbgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                Log.e(TAG, "onCheckedChanged: "+ checkedId);
-                if (checkedId == R.id.rbDir) {
-                    Log.e(TAG, "onCheckedChanged: " + "Directory");
-                    chooseType = 1;
-                } else if (checkedId == R.id.rbFile) {
-                    Log.e(TAG, "onCheckedChanged: " + "File");
-                    chooseType = 0;
-                }
-            }
-        });
-
-        btLoadFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (folderLocation == null) {
-
-                    builder.setTitle("Directory didn't selected?");
-                    builder.setMessage("Operation aborted, please Select Directory or 'OK' to default directory.");
-                            m_chosenDir = String.valueOf(
-                                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
-                    builder.setPositiveButton("OK", eksekusi());
-                    builder.setNegativeButton("CANCEL", null);
-                    builder.show();
-                    Log.e(TAG, "onClick: " + new File(m_chosenDir).exists());
-                } else {
-                    m_chosenDir = folderLocation;
-                }
-
-                if (new File(m_chosenDir).exists() && !LandingPage.m_chosenDir.isEmpty()) {
-
-                    // Execution main process
-//                    task.execute();
-                    if (mTask == null) {
-                        mTask = new BackgroundTask();
-                    }
-                    new BackgroundTask().execute();
-//                    mTask = (BackgroundTask) new BackgroundTask().execute();
-//                    btn_start.setClickable(false);
-                    Toast.makeText(LandingPage.this, "Mode : Batch Mode ", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-    }
-
-    private DialogInterface.OnClickListener eksekusi() {
-        Log.e(TAG, "eksekusi: " );
-        mTask.execute();
-        return null;
-    }
-
-    @Override
     protected void onPause() {
         Log.d(TAG, "onPause() called.");
 
@@ -230,14 +170,33 @@ public class LandingPage extends Activity {
         }
     }
 
-    @Override
     protected void onResume() {
         super.onResume();
     }
 
-    @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        m_chosenDir = folderLocation;
+
+
+        if (requestCode == FOLDER_PICKER_CODE && resultCode == Activity.RESULT_OK) {
+
+            Log.e(TAG, "onActivityResult: " + intent);
+            folderLocation = intent.getExtras().getString("data");
+            Log.i("folderLocation", folderLocation);
+            tvLoc.setText(folderLocation);
+
+        } else if (requestCode == FILE_PICKER_CODE && resultCode == Activity.RESULT_OK) {
+            Log.e(TAG, "onActivityResult: " + intent);
+            folderLocation = intent.getExtras().getString("data");
+            Log.i("folderLocation", folderLocation);
+            tvLoc.setText(folderLocation);
+
+        }
     }
 
     public void openCamera(View view) {
@@ -264,11 +223,12 @@ public class LandingPage extends Activity {
         String fileLoc = imgFile.toString();
 
         filename = imgFile.getName();
+        Log.e(TAG, "loadFile: Detected filename "+ filename );
         int pos = filename.lastIndexOf(".");
         if (pos > 0) {
             filename = filename.substring(0, pos);
         }
-        Log.e(TAG, "loadFile: FileName " + filename);
+//        Log.e(TAG, "loadFile: FileName " + filename);
 
 //        File imgFile = new File(folderLocation);
 
@@ -347,6 +307,72 @@ public class LandingPage extends Activity {
         }
     }
 
+    private void initListener() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(LandingPage.this);
+
+        rbgType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                Log.e(TAG, "onCheckedChanged: "+ checkedId);
+                if (checkedId == R.id.rbDir) {
+                    Log.e(TAG, "onCheckedChanged: " + "Directory");
+                    chooseType = 1;
+                } else if (checkedId == R.id.rbFile) {
+                    Log.e(TAG, "onCheckedChanged: " + "File");
+                    chooseType = 0;
+                }
+            }
+        });
+
+        btLoadFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (folderLocation == null) {
+
+//                    Log.e(TAG, "onClick: " + new File(m_chosenDir).exists());
+
+                    builder.setTitle("Directory didn't selected?")
+                            .setMessage("Operation aborted, please Select Directory or 'OK' to default directory.")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    m_chosenDir = String.valueOf(
+                                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
+                                    Log.e(TAG, "onClick: "+ m_chosenDir );
+                                    new BackgroundTask().execute();
+                                }
+                            })
+//                    builder.setPositiveButton("OK", eksekusi());
+                            .setNegativeButton("CANCEL", null)
+                            .show();
+                } else {
+                    m_chosenDir = folderLocation;
+                }
+
+                if (new File(m_chosenDir).exists() && !LandingPage.m_chosenDir.isEmpty()) {
+
+                    // Execution main process
+//                    task.execute();
+                    if (mTask == null) {
+                        mTask = new BackgroundTask();
+                    }
+                    new BackgroundTask().execute();
+//                    mTask = (BackgroundTask) new BackgroundTask().execute();
+//                    btn_start.setClickable(false);
+                    Toast.makeText(LandingPage.this, "Mode : Batch Mode ", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
+
+    private DialogInterface.OnClickListener eksekusi() {
+        Log.e(TAG, "eksekusi: ");
+        mTask.execute();
+        return null;
+    }
+
     private void showPhoto(Mat photo, Canvas c, Mat detectedFaceForDisplaying, String result) {
 
         // Display Image for Result Detected Face(s)
@@ -396,7 +422,7 @@ public class LandingPage extends Activity {
         MatOfRect faceDetection = new MatOfRect();
         mDetector.detectMultiScale(image, faceDetection);
 
-        Log.e(TAG, String.format("loadFile: " + "Detected %s faces", faceDetection.toArray().length));
+        Log.e(TAG, String.format("loadFile: " + "Detected %s faces %s", faceDetection.toArray().length, filename));
 
         // Get Name of file
         filename = new File(folderLocation).getName();
@@ -521,26 +547,6 @@ public class LandingPage extends Activity {
 
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-
-        m_chosenDir = folderLocation;
-
-
-        if (requestCode == FOLDER_PICKER_CODE && resultCode == Activity.RESULT_OK) {
-
-            Log.e(TAG, "onActivityResult: " + intent);
-            folderLocation = intent.getExtras().getString("data");
-            Log.i("folderLocation", folderLocation);
-            tvLoc.setText(folderLocation);
-
-        } else if (requestCode == FILE_PICKER_CODE && resultCode == Activity.RESULT_OK) {
-            Log.e(TAG, "onActivityResult: " + intent);
-            folderLocation = intent.getExtras().getString("data");
-            Log.i("folderLocation", folderLocation);
-            tvLoc.setText(folderLocation);
-
-        }
-    }
 
     public void SaveImage(Mat image) {
         Boolean bool = null;
@@ -563,29 +569,6 @@ public class LandingPage extends Activity {
     }
 
     private class BackgroundTask extends AsyncTask<String, Integer, List<RowItem>> {
-
-        @Override
-        protected void onPreExecute() {
-//            Toast.makeText(LandingPage.this, "onPreExecute", Toast.LENGTH_LONG).show();
-            myProgress = 0;
-        }
-
-        @Override
-        protected void onPostExecute(List<RowItem> aVoid) {
-//            Toast.makeText(LandingPage.this, "onPostExecute", Toast.LENGTH_LONG).show();
-            btLoadFile.setClickable(true);
-            mTask = null;
-        }
-
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//            while (myProgress<100){
-//                myProgress++;
-//                publishProgress(myProgress);
-//                SystemClock.sleep(100);
-//            }
-//            return null;
-//        }
 
         int myProgress;
         private Activity context;
@@ -613,8 +596,8 @@ public class LandingPage extends Activity {
 
                     list = dir.listFiles();
 
-                    Log.e(TAG, "doInBackground: numfiles " + list.length);
-                    Log.e(TAG, "doInBackground: files " + Arrays.toString(list));
+//                    Log.e(TAG, "doInBackground: numfiles " + list.length);
+//                    Log.e(TAG, "doInBackground: files " + Arrays.toString(list));
 
                     // Initialize Log Report File
 //                logReport.initLogReport();
@@ -625,11 +608,19 @@ public class LandingPage extends Activity {
 
                         myProgress++;
 
-                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
+//                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
                         publishProgress(myProgress * 100 / list.length);
 //                    rowItems.add(new RowItem(map));
 
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
                     }
+
+                    m_chosenDir = "";
 
                     WFRDataFactory.getInstance().flush();
                     Settings.getInstance().sync();
@@ -639,7 +630,25 @@ public class LandingPage extends Activity {
 
                 }
             } else {
-                loadFile(new File(strDir));
+                for (int i = 0; i < 10; i++) {
+                    Log.e(TAG, "doInBackground: Detected at Iter "+ (i+1) );
+                    for (int ii = 0; ii < 10; ii++) {
+
+                        try {
+                            loadFile(new File(strDir));
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        myProgress++;
+
+//                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
+                        publishProgress(myProgress * 100 / 100);
+
+
+                    }
+
+                }
             }
 
             return rowItems;
@@ -647,11 +656,35 @@ public class LandingPage extends Activity {
 
 
         @Override
+        protected void onPreExecute() {
+//            Toast.makeText(LandingPage.this, "onPreExecute", Toast.LENGTH_LONG).show();
+            myProgress = 0;
+        }
+
+        @Override
+        protected void onPostExecute(List<RowItem> aVoid) {
+//            Toast.makeText(LandingPage.this, "onPostExecute", Toast.LENGTH_LONG).show();
+            btLoadFile.setClickable(true);
+            mTask = null;
+        }
+
+//        @Override
+//        protected Void doInBackground(Void... params) {
+//            while (myProgress<100){
+//                myProgress++;
+//                publishProgress(myProgress);
+//                SystemClock.sleep(100);
+//            }
+//            return null;
+//        }
+
+
+        @Override
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             pbar.setProgress(values[0]);
             tv_percentage.setText(String.format("%s %%", values[0].toString()));
-            Log.e(TAG, "onProgressUpdate: values " + values[0]);
+//            Log.e(TAG, "onProgressUpdate: values " + values[0]);
         }
     }
 }

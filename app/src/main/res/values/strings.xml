@@ -10,4 +10,11 @@
     <string name="imgDesc">Image Description</string>
     <string name="percent_sign">%</string>
     <string name="slash_sign">/</string>
+    <string name="action_load_dir">Load Directory</string>
+    <string name="add_record">Add New</string>
+    <string name="identify_record">Identify</string>
+    <string name="btn_start_load">Start</string>
+    <string name="btn_pause_load">Pause</string>
+    <string name="btn_stop_load">Stop</string>
+    <string name="image">Image Description</string>
 </resources>
