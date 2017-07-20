@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /Volumes/MacHD/Users/wildan/Myproject/android/Native/Whoo/opencv/sdk/java/src/org/opencv/engine/OpenCVEngineInterface.aidl
+ * Original file: /home/sid/Documents/Apps/android/FacialRecognition/OpenCV_Based/Whoo/opencv/sdk/java/src/org/opencv/engine/OpenCVEngineInterface.aidl
  */
 package org.opencv.engine;
 /**

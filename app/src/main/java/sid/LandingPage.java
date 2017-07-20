@@ -195,7 +195,7 @@ public class LandingPage extends Activity {
                     if (mTask == null) {
                         mTask = new BackgroundTask();
                     }
-                    mTask.execute();
+                    new BackgroundTask().execute();
 //                    mTask = (BackgroundTask) new BackgroundTask().execute();
 //                    btn_start.setClickable(false);
                     Toast.makeText(LandingPage.this, "Mode : Batch Mode ", Toast.LENGTH_SHORT).show();
