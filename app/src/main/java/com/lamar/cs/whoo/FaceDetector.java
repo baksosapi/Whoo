@@ -69,7 +69,8 @@ public class FaceDetector {
 
     private CascadeClassifier mDetector;
     private File mCascadeFile;
-    private final String mCascadeFileName = "lppcascade.xml";
+//    private final String mCascadeFileName = "lppcascade.xml";
+    private final String mCascadeFileName = "haarcascade_frontalface_alt.xml";
 
     private final Scalar FACE_RECT_COLOR = new Scalar(0, 255, 0, 255);
 
@@ -231,7 +232,8 @@ public class FaceDetector {
     }
 
     public void onDrawView(Canvas canvas) {
-        //Log.i(TAG, "fd.onDrawView() is called.");
+        Log.e(TAG, "fd.onDrawView() detected is called.");
+//        Log.i(TAG, "fd.onDrawView() detected is called.");
         if (!mInited) return;
         
         //
@@ -287,6 +289,7 @@ public class FaceDetector {
 
         mDetector.detectMultiScale(mImageGray, mats, 1.1, 2, 2,
                 new Size(faceSize, faceSize), new Size());
+        Log.e(TAG, "onDrawView: detected "+ mDetector.empty() );
         Log.e(TAG, String.format("loadFile: "+"Detected: %s faces", mats.toArray().length ));
 
         //
@@ -294,10 +297,12 @@ public class FaceDetector {
         //
         Rect[] faces = mats.toArray();
         for (int ii = 0; ii < faces.length; ii++) {
+            Log.e(TAG, "onDrawView: faces num "+ ii );
             if (faces[ii].width >= (int)(0.33 * canvas.getWidth())) {
                 //
                 // change the state: from NO to YES !!!
                 //
+                Log.e(TAG, "onDrawView: detected mHasDetectec"+ mHasDetected );
                 if (!mHasDetected) {
                     mHasDetected = true;
                 }
@@ -401,6 +406,7 @@ public class FaceDetector {
             mYUVData = new Mat(mHeight + (mHeight/2), mWidth, CvType.CV_8UC1);
             mRGBData = new Mat();
         } else {
+            Log.e(TAG, "onCameraFrameInjected: "+ "mYUVData exist" );
 //            Log.e(TAG, "onCameraFrameInjected:-unsync "+ mYUVData.dump() );
         }
 

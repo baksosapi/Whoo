@@ -114,6 +114,13 @@ public class LandingPage extends Activity {
     private static String m_chosenDir = "";
     LogReport logReport = new LogReport();
     private WFaceRecognizer wfr;
+//        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
+//        folderLocation = "/storage/emulated/0/Download/lena.png"; // 512px
+//        String folderLocation = "/storage/emulated/0/Download/image2.jpg"; // 1024px
+//        folderLocation = "/storage/emulated/0/Download/scarlett_johansson.png"; // 1920px
+//        folderLocation = "/storage/emulated/0/Download/10006868.jpg"; // 1920px
+//        folderLocation = "/storage/emulated/0/Download/nail.png"; // 1920px
+//        folderLocation = "/storage/emulated/0/Download/balsamic.png"; // 1920px
 
     protected void onCreate(Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
@@ -207,18 +214,6 @@ public class LandingPage extends Activity {
     }
 
     public void loadFile(File imgFile) {
-//        Intent intent = new Intent(LandingPage.this, ImageLoad.class);
-//        startActivity(intent);
-
-//        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
-//        folderLocation = "/storage/emulated/0/Download/lena.png"; // 512px
-//        folderLocation = "/storage/emulated/0/Download/image2.jpg"; // 1024px
-//        folderLocation = "/storage/emulated/0/Download/scarlett_johansson.png"; // 1920px
-//        folderLocation = "/storage/emulated/0/Download/10006868.jpg"; // 1920px
-//        folderLocation = "/storage/emulated/0/Download/nail.png"; // 1920px
-//        folderLocation = "/storage/emulated/0/Download/balsamic.png"; // 1920px
-
-//        mTask.execute();
 
         String fileLoc = imgFile.toString();
 
@@ -228,8 +223,6 @@ public class LandingPage extends Activity {
         if (pos > 0) {
             filename = filename.substring(0, pos);
         }
-//        Log.e(TAG, "loadFile: FileName " + filename);
-
 //        File imgFile = new File(folderLocation);
 
         if (imgFile.exists()) {
@@ -245,7 +238,12 @@ public class LandingPage extends Activity {
             Canvas c = new Canvas(b);
             fd.setResolution(b.getWidth(), b.getHeight());
 //            fd.lock();
+//            Mat photo_read = Highgui.imread(fileLoc);
             Mat photo = Highgui.imread(fileLoc);
+//            Mat photo = new Mat(photo_read.height(), photo_read.width(), CvType.CV_8UC1, new Scalar(4));
+//            Imgproc.cvtColor(photo_read, photo, Imgproc.COLOR_RGB2GRAY);
+
+
             // Get Bytes of Image
 //            File file = new File(folderLocation);
 //            int size = (int) file.length();
@@ -332,20 +330,20 @@ public class LandingPage extends Activity {
 
 //                    Log.e(TAG, "onClick: " + new File(m_chosenDir).exists());
 
-                    builder.setTitle("Directory didn't selected?")
-                            .setMessage("Operation aborted, please Select Directory or 'OK' to default directory.")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+//                    builder.setTitle("Directory didn't selected?")
+//                            .setMessage("Operation aborted, please Select Directory or 'OK' to default directory.")
+//                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                @Override
+//                                public void onClick(DialogInterface dialog, int which) {
                                     m_chosenDir = String.valueOf(
                                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
-                                    Log.e(TAG, "onClick: "+ m_chosenDir );
-                                    new BackgroundTask().execute();
-                                }
-                            })
+//                                    Log.e(TAG, "onClick: "+ m_chosenDir );
+//                                    new BackgroundTask().execute();
+//                                }
+//                            })
 //                    builder.setPositiveButton("OK", eksekusi());
-                            .setNegativeButton("CANCEL", null)
-                            .show();
+//                            .setNegativeButton("CANCEL", null)
+//                            .show();
                 } else {
                     m_chosenDir = folderLocation;
                 }
@@ -581,9 +579,14 @@ public class LandingPage extends Activity {
             noOfPaths = urls.length;
             rowItems = new ArrayList<RowItem>();
 
-            Log.e(TAG, "doInBackground: " + noOfPaths);
+//            Log.e(TAG, "doInBackground: " + noOfPaths);
 
             String strDir = LandingPage.m_chosenDir;
+            String mCascadeFileName = "haarcascade_frontalface_alt.xml";
+//            String mCascadeFileName = "lppcascade.xml";
+            File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
+            File mCascadeFile = new File(cascadeDir, mCascadeFileName);
+            CascadeClassifier faceDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
 
             if (new File(strDir).isDirectory()) {
 
@@ -602,22 +605,38 @@ public class LandingPage extends Activity {
                     // Initialize Log Report File
 //                logReport.initLogReport();
 
+
+//                    }
                     for (File f : list) {
-
-                        loadFile(f);
-
+//
+////                        loadFile(f);
+//
+//                        // Other
+//
+                        Mat image = Highgui
+                                .imread(f.getPath());
+//
+                        MatOfRect faceDetections = new MatOfRect();
+                        faceDetector.detectMultiScale(image, faceDetections);
+//
+                        Log.e(TAG, "doInBackground: filename : "+ f.getName()+" detected :"+faceDetections.toArray().length);
+//
+//                        for (Rect rect : faceDetections.toArray()) {
+//                            Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+//                                    new Scalar(0, 255, 0));
+//                        }
                         myProgress++;
-
-//                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
-                        publishProgress(myProgress * 100 / list.length);
-//                    rowItems.add(new RowItem(map));
-
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
+//
+////                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
+//                        publishProgress(myProgress * 100 / list.length);
+////                    rowItems.add(new RowItem(map));
+//
+//                        try {
+//                            Thread.sleep(1000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//
                     }
 
                     m_chosenDir = "";
@@ -630,25 +649,54 @@ public class LandingPage extends Activity {
 
                 }
             } else {
-                for (int i = 0; i < 10; i++) {
-                    Log.e(TAG, "doInBackground: Detected at Iter "+ (i+1) );
-                    for (int ii = 0; ii < 10; ii++) {
+//                for (int i = 0; i < 10; i++) {
+//                    Log.e(TAG, "doInBackground: Detected at Iter "+ (i+1) );
+//                    for (int ii = 0; ii < 10; ii++) {
+//
+//                        try {
+////                            loadFile(new File(strDir));
+//                            loadFile(new File(folderLocation));
+//                            Thread.sleep(1000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        myProgress++;
 
-                        try {
-                            loadFile(new File(strDir));
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        myProgress++;
+////                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
+//                        publishProgress(myProgress * 100 / 100);
+
+
+//                    }
+
+//                }
+
+
+//                    for (int i = 0; i < 10; i++) {
+//                        Log.e(TAG, "doInBackground: Detected at Iter "+ (i+1) );
+                for (int ii = 0; ii < 100; ii++) {
+
+//                        // Other
+//
+                    Mat image = Highgui
+                            .imread(folderLocation);
+
+                    MatOfRect faceDetections = new MatOfRect();
+                    faceDetector.detectMultiScale(image, faceDetections);
+
+                    Log.e(TAG, "doInBackground: filename : "+ folderLocation+" detected :"+faceDetections.toArray().length);
+
+                    for (Rect rect : faceDetections.toArray()) {
+                        Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                                new Scalar(0, 255, 0));
+                    }
+                    myProgress++;
 
 //                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
-                        publishProgress(myProgress * 100 / 100);
+                    publishProgress(myProgress * 100 / 100);
 
-
-                    }
 
                 }
+
             }
 
             return rowItems;
