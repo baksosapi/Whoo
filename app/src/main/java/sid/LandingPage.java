@@ -51,6 +51,7 @@ import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.features2d.DescriptorExtractor;
 import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
@@ -74,6 +75,7 @@ import lib.folderpicker.FolderPicker;
 import static android.R.attr.height;
 import static android.R.attr.logo;
 import static android.R.attr.popupAnimationStyle;
+import static android.R.attr.process;
 import static android.R.attr.width;
 
 /**
@@ -328,6 +330,8 @@ public class LandingPage extends Activity {
 
                 if (folderLocation == null) {
 
+                    Log.e(TAG, "onClick: folder null" );
+
 //                    Log.e(TAG, "onClick: " + new File(m_chosenDir).exists());
 
 //                    builder.setTitle("Directory didn't selected?")
@@ -335,8 +339,29 @@ public class LandingPage extends Activity {
 //                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 //                                @Override
 //                                public void onClick(DialogInterface dialog, int which) {
-                                    m_chosenDir = String.valueOf(
-                                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/96002947.jpg"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/95003026.jpg"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/16000163.jpg"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/12000157.jpg"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/11003115.jpg"));
+                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/11001834.jpg"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/11001810.jpg"));
+
+//                    96002947.jpg //detected :1
+//                    95003026.jpg //detected :1
+//                    16000163.jpg //detected :1
+//                    12000157.jpg //detected :0
+//                    11003115.jpg //detected :1
+//                    11001834.jpg //detected :0
+//                    11001810.jpg //detected :0
+
+//                    if (new File(m_chosenDir).isDirectory()){
+//                        processDir(m_chosenDir);
+//                    } else {
+//                        processFile(m_chosenDir);
+//                    }
+
 //                                    Log.e(TAG, "onClick: "+ m_chosenDir );
 //                                    new BackgroundTask().execute();
 //                                }
@@ -345,24 +370,33 @@ public class LandingPage extends Activity {
 //                            .setNegativeButton("CANCEL", null)
 //                            .show();
                 } else {
+                    Log.e(TAG, "onClick: folder null "+folderLocation );
                     m_chosenDir = folderLocation;
                 }
 
-                if (new File(m_chosenDir).exists() && !LandingPage.m_chosenDir.isEmpty()) {
+                processDir(m_chosenDir);
 
-                    // Execution main process
-//                    task.execute();
-                    if (mTask == null) {
-                        mTask = new BackgroundTask();
-                    }
-                    new BackgroundTask().execute();
-//                    mTask = (BackgroundTask) new BackgroundTask().execute();
-//                    btn_start.setClickable(false);
-                    Toast.makeText(LandingPage.this, "Mode : Batch Mode ", Toast.LENGTH_SHORT).show();
-                }
 
             }
         });
+    }
+
+    private void processDir(String m_chosenDir) {
+        if (new File(m_chosenDir).exists() && !LandingPage.m_chosenDir.isEmpty()) {
+
+            // Execution main process
+//                    task.execute();
+            if (mTask == null) {
+                mTask = new BackgroundTask();
+            }
+            new BackgroundTask().execute();
+//                    mTask = (BackgroundTask) new BackgroundTask().execute();
+//                    btn_start.setClickable(false);
+            Toast.makeText(LandingPage.this, "Mode : Batch Mode "+m_chosenDir, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(LandingPage.this, "File folder not found "+m_chosenDir, Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     private DialogInterface.OnClickListener eksekusi() {
@@ -545,7 +579,6 @@ public class LandingPage extends Activity {
 
     }
 
-
     public void SaveImage(Mat image) {
         Boolean bool = null;
         String newfilename = "faceDetection.png";
@@ -613,11 +646,20 @@ public class LandingPage extends Activity {
 //
 //                        // Other
 //
-                        Mat image = Highgui
-                                .imread(f.getPath());
-//
+                        Mat image = Highgui.imread(f.getPath());
+
+                        // Convert to Gray
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        Bitmap bitmap = BitmapFactory.decodeFile(f.getPath(), options);
+//                    selected_photo.setImageBitmap(bitmap);
+                        Mat imgray = WhooTools.bitmap2GrayScaleMat(bitmap);
+                        int faceSize = Math.round(imgray.rows() * 0.1f);
+// /
                         MatOfRect faceDetections = new MatOfRect();
-                        faceDetector.detectMultiScale(image, faceDetections);
+                        faceDetector.detectMultiScale(imgray, faceDetections, 1.08 , 2, 2, new Size(faceSize, faceSize), new Size());
+//                        faceDetector.detectMultiScale(imgray, faceDetections);
+//                        faceDetector.detectMultiScale(image, faceDetections);
 //
                         Log.e(TAG, "doInBackground: filename : "+ f.getName()+" detected :"+faceDetections.toArray().length);
 //
@@ -673,26 +715,40 @@ public class LandingPage extends Activity {
 
 //                    for (int i = 0; i < 10; i++) {
 //                        Log.e(TAG, "doInBackground: Detected at Iter "+ (i+1) );
+
+                double a = 0;
                 for (int ii = 0; ii < 100; ii++) {
+
+//                    a = a + 0.01;
 
 //                        // Other
 //
-                    Mat image = Highgui
-                            .imread(folderLocation);
+//                    Mat image = Highgui.imread(strDir);
+
+                    // Convert to Gray
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                    Bitmap bitmap = BitmapFactory.decodeFile(strDir, options);
+//                    selected_photo.setImageBitmap(bitmap);
+                    Mat imgray = WhooTools.bitmap2GrayScaleMat(bitmap);
+                    int faceSize = Math.round(imgray.rows() * 0.1f);
 
                     MatOfRect faceDetections = new MatOfRect();
-                    faceDetector.detectMultiScale(image, faceDetections);
+//                    faceDetector.detectMultiScale(imgray, faceDetections);
+                    // 1.02
+                    // 1.03
+                    faceDetector.detectMultiScale(imgray, faceDetections, 1.02 , 2, 2, new Size(faceSize, faceSize), new Size());
 
-                    Log.e(TAG, "doInBackground: filename : "+ folderLocation+" detected :"+faceDetections.toArray().length);
+                    Log.e(TAG, "doInBackground: filename : "+ a +" detected :"+faceDetections.toArray().length);
 
                     for (Rect rect : faceDetections.toArray()) {
-                        Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                        Core.rectangle(imgray, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
                                 new Scalar(0, 255, 0));
                     }
                     myProgress++;
 
 //                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
-                    publishProgress(myProgress * 100 / 100);
+                    publishProgress(myProgress * 100 / 100); // n
 
 
                 }
