@@ -292,10 +292,12 @@ public class WFaceRecognizer {
         return mConfidence;
     }
 
-    private boolean predict() {
+//    private boolean predict() {
+    public boolean predict() {
         Log.d(TAG, "predict() is called:");
         
         FaceDetector fd = FaceDetector.getInstance();
+        Log.e(TAG, "predict: "+ fd );
         assert(fd != null);
         if (!fd.hasDetected()) {
             Log.e(TAG, "fd.hasDetected()==false? unexpected!");
@@ -466,7 +468,7 @@ public class WFaceRecognizer {
         List<Mat> images = new ArrayList<Mat>();
         int[] labels = new int[imageCount];
 
-        WhooLog.d("do_train(): img_cnt=" + imageCount);
+        WhooLog.d("doTrain(): img_cnt=" + imageCount);
        
         for (int ii = 0; ii < imageCount; ii++) {
             WFRFaceImage wfi = vector.get(ii);

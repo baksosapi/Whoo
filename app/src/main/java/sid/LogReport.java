@@ -19,12 +19,12 @@ public class LogReport {
     SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy-hhmmss") ;
     String path = Environment.getExternalStorageDirectory().toString();
     File dirLog = new File(path + "/OCVReportFR");
-    public File fileLog = new File(dirLog, "OCVFaceData"+ dateFormat.format(date) +".txt");
+    public File fileLog = new File(dirLog, "OCVFaceData"+ dateFormat.format(date) +".csv");
     BufferedWriter bufw;
 
     //    public void saveLog(String name, int[] intBitmap, byte[] bytes) {
 //    }
-    public void saveLog(String name, String result_name, double confidence) {
+    public void saveLog(String name, String result_name, double confidence, String numFace) {
 
         // Char comma 44
         // Char LineFeed 10
@@ -37,6 +37,8 @@ public class LogReport {
             bufw.write(result_name);
             bufw.write(44);
             bufw.write(String.valueOf(confidence));
+            bufw.write(44);
+            bufw.write(numFace);
 
 //            for (int i: facePoints) {
 //                bufw.write(44);

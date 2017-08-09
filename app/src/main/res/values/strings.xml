@@ -17,4 +17,5 @@
     <string name="btn_pause_load">Pause</string>
     <string name="btn_stop_load">Stop</string>
     <string name="image">Image Description</string>
+    <string name="no_file_path">No Location selected</string>
 </resources>

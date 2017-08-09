@@ -365,6 +365,10 @@ public class FaceDetector {
         return mHasDetected;
     }
 
+    public void setHasDetected(boolean hasDet) {
+        this.mHasDetected = hasDet;
+    }
+
     public void lock() {
         mIsLocked = true;
     }
@@ -375,6 +379,10 @@ public class FaceDetector {
 
     public Mat getDetectedFace() {
         return mDetectedFace;
+    }
+
+    public void setDetectedFace(Mat mDetectedFace) {
+        this.mDetectedFace = mDetectedFace;
     }
 
     public Mat getDetectedFaceForDisplaying() {

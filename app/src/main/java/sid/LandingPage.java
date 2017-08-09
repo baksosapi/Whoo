@@ -60,13 +60,17 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -77,6 +81,7 @@ import static android.R.attr.logo;
 import static android.R.attr.popupAnimationStyle;
 import static android.R.attr.process;
 import static android.R.attr.width;
+import static com.lamar.cs.whoo.R.raw.person;
 
 /**
  * Created by sid on 7/11/17.
@@ -116,6 +121,7 @@ public class LandingPage extends Activity {
     private static String m_chosenDir = "";
     LogReport logReport = new LogReport();
     private WFaceRecognizer wfr;
+
 //        folderLocation = "/storage/emulated/0/Download/Donal1.jpg";
 //        folderLocation = "/storage/emulated/0/Download/lena.png"; // 512px
 //        String folderLocation = "/storage/emulated/0/Download/image2.jpg"; // 1024px
@@ -155,7 +161,7 @@ public class LandingPage extends Activity {
 //        dirLoc.setInputType(InputType.TYPE_NULL);
 //        dirLoc.setKeyListener(null);
 
-        tvLoc.setText("No Location selected");
+        tvLoc.setText(R.string.no_file_path);
 
         initListener();
 
@@ -220,7 +226,7 @@ public class LandingPage extends Activity {
         String fileLoc = imgFile.toString();
 
         filename = imgFile.getName();
-        Log.e(TAG, "loadFile: Detected filename "+ filename );
+        Log.e(TAG, "loadFile: Detected filename " + filename);
         int pos = filename.lastIndexOf(".");
         if (pos > 0) {
             filename = filename.substring(0, pos);
@@ -330,7 +336,7 @@ public class LandingPage extends Activity {
 
                 if (folderLocation == null) {
 
-                    Log.e(TAG, "onClick: folder null" );
+//                    Log.e(TAG, "onClick: folder null");
 
 //                    Log.e(TAG, "onClick: " + new File(m_chosenDir).exists());
 
@@ -339,13 +345,19 @@ public class LandingPage extends Activity {
 //                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 //                                @Override
 //                                public void onClick(DialogInterface dialog, int which) {
-//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
+
+                    //
+                    // Directory
+                    //
+//                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2"));
+                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID"));
+
 //                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/96002947.jpg"));
 //                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/95003026.jpg"));
 //                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/16000163.jpg"));
 //                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/12000157.jpg"));
 //                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/11003115.jpg"));
-                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/11001834.jpg"));
+//                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/11001834.jpg"));
 //                                    m_chosenDir = String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM + "/SID2/11001810.jpg"));
 
 //                    96002947.jpg //detected :1
@@ -370,11 +382,12 @@ public class LandingPage extends Activity {
 //                            .setNegativeButton("CANCEL", null)
 //                            .show();
                 } else {
-                    Log.e(TAG, "onClick: folder null "+folderLocation );
+//                    Log.e(TAG, "onClick: folder null " + folderLocation);
                     m_chosenDir = folderLocation;
                 }
 
                 processDir(m_chosenDir);
+
 
 
             }
@@ -392,9 +405,9 @@ public class LandingPage extends Activity {
             new BackgroundTask().execute();
 //                    mTask = (BackgroundTask) new BackgroundTask().execute();
 //                    btn_start.setClickable(false);
-            Toast.makeText(LandingPage.this, "Mode : Batch Mode "+m_chosenDir, Toast.LENGTH_SHORT).show();
+            Toast.makeText(LandingPage.this, "Mode : Batch Mode " + m_chosenDir, Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(LandingPage.this, "File folder not found "+m_chosenDir, Toast.LENGTH_SHORT).show();
+            Toast.makeText(LandingPage.this, "File folder not found " + m_chosenDir, Toast.LENGTH_SHORT).show();
 
         }
     }
@@ -606,6 +619,11 @@ public class LandingPage extends Activity {
         List<RowItem> rowItems;
         int noOfPaths;
         private File[] list;
+//        FaceDetector fd = FaceDetector.getInstance();
+        WFaceRecognizer wfr = WFaceRecognizer.getInstance();
+        WFRDataFactory factory = WFRDataFactory.getInstance();
+        LocalNameList lnlist = LocalNameList.getInstance();
+        FaceDetector fd = FaceDetector.getInstance();
 
         @Override
         protected List<RowItem> doInBackground(String... urls) {
@@ -616,10 +634,15 @@ public class LandingPage extends Activity {
 
             String strDir = LandingPage.m_chosenDir;
             String mCascadeFileName = "haarcascade_frontalface_alt.xml";
-//            String mCascadeFileName = "lppcascade.xml";
+//            String mCascadeFileName = "lbpcascade_frontalface.xml";
             File cascadeDir = getApplicationContext().getDir("cascade", Context.MODE_PRIVATE);
             File mCascadeFile = new File(cascadeDir, mCascadeFileName);
             CascadeClassifier faceDetector = new CascadeClassifier(mCascadeFile.getAbsolutePath());
+
+            //
+            // Check if Input is Directory or Not
+            //
+//            logReport.initLogReport();
 
             if (new File(strDir).isDirectory()) {
 
@@ -636,17 +659,35 @@ public class LandingPage extends Activity {
 //                    Log.e(TAG, "doInBackground: files " + Arrays.toString(list));
 
                     // Initialize Log Report File
-//                logReport.initLogReport();
+                logReport.initLogReport();
 
 
 //                    }
+                    //
+                    // Test scalefactor, neigbour
+                    //
+//                    for (int i = 0; i < 4; i++) {
+//                    for (int j = 1; j < 100; j++) {
                     for (File f : list) {
+
+                        wfr.predict();
+
 //
 ////                        loadFile(f);
 //
 //                        // Other
+
+//                        FaceDetector fd = FaceDetector.getInstance();
+//                        Mat mat = fd.getDetectedFaceForDisplaying();
+//                        Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.ARGB_8888);
+//                        Utils.matToBitmap(mat, bitmap);
+
 //
                         Mat image = Highgui.imread(f.getPath());
+                        Mat imrefgray = new Mat();
+                        Imgproc.cvtColor(image, imrefgray, Imgproc.COLOR_RGB2GRAY);
+
+                        if (imrefgray.width() > imrefgray.height()) Core.flip(imrefgray.t(), imrefgray, 0);
 
                         // Convert to Gray
                         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -654,23 +695,96 @@ public class LandingPage extends Activity {
                         Bitmap bitmap = BitmapFactory.decodeFile(f.getPath(), options);
 //                    selected_photo.setImageBitmap(bitmap);
                         Mat imgray = WhooTools.bitmap2GrayScaleMat(bitmap);
-                        int faceSize = Math.round(imgray.rows() * 0.1f);
+
+//                        int faceSize = Math.round(imgray.rows() * 0.1f);
+                        int faceSize = 128;
+
+//                        Log.e(TAG, "doInBackground: faceSize "+ faceSize );
 // /
                         MatOfRect faceDetections = new MatOfRect();
-                        faceDetector.detectMultiScale(imgray, faceDetections, 1.08 , 2, 2, new Size(faceSize, faceSize), new Size());
+
+                        faceDetector.detectMultiScale(imgray, faceDetections, 1.01, 4, 2, new Size(faceSize, faceSize), new Size());
+//
+//                        faceDetector.detectMultiScale(imgray, faceDetections, 1.0 + (j * 0.01) , 2+i, 2, new Size(faceSize, faceSize), new Size());
 //                        faceDetector.detectMultiScale(imgray, faceDetections);
 //                        faceDetector.detectMultiScale(image, faceDetections);
 //
-                        Log.e(TAG, "doInBackground: filename : "+ f.getName()+" detected :"+faceDetections.toArray().length);
+
+                        Rect[] faces = faceDetections.toArray();
+                        int facesLength = faces.length;
+                        int iFacesLength = facesLength - 1;
+
+                        Log.e(TAG, "doInBackground: faceLength "+ facesLength );
+//                        for (int i = 0; i < faces.length; i++) {
+//                            Log.e(TAG, "doInBackground: faceWidth "+ faces[i].width );
+//                        }
+                        // Crop the face
+                        if (facesLength > 0) {
+
+
+                            mDetectedFace = imrefgray.submat(
+                                    faces[iFacesLength].y, faces[iFacesLength].y + faces[iFacesLength].height,
+                                    faces[iFacesLength].x, faces[iFacesLength].x + faces[iFacesLength].width);
+
+
+                            mDetectedFace = WhooTools.resize(mDetectedFace);
+
+                            fd.setDetectedFace(mDetectedFace);
+                            fd.setHasDetected(true);
+//                            Mat face = fd.getDetectedFace();
+
+//                            String instr = input.getText().toString();
+                            String instr = f.getName();
+
+                            lnlist.inputLocalName(instr);
+                            int index = lnlist.findExistNameLocation(instr);
+                            if (-1 == index) {
+                                Log.e(TAG, "WRONG NAME, WHY?");
+                                WhooConfig.DBG(LandingPage.this, "WRONG NAME, WHY?");
+//                                return;
+                            }
+                            String name = lnlist.getLocalName(index);
+
+                            WFRPerson person = factory.addPerson(name);
+                            if (null == person) {
+                                Log.e(TAG, "Add Person Failed, WHY?");
+                                WhooConfig.DBG(LandingPage.this, "Add Person Failed, WHY?");
+//                                return;
+                            }
+
+
+//                            String name = lnlist.getLocalName(index);
+
+                            boolean ret = person.addFaceImage(mDetectedFace);
+
+                            Log.e(TAG, "doInBackground: "+ ret );
+                            logReport.saveLog(f.getName(), mDetectedFace.toString(), 1.00, "1");
+
+                            if (ret){
+
+//                                saveOutputImage(f.getName(), mDetectedFace, faceDetections);
+                                wfr.train();
+
+                            }
+
+                        }
+//                        saveOutputImage(f.getName(), imrefgray, faceDetections);
+
+                        Log.e(TAG, "doInBackground: filename : " + f.getName() + " faceNum :" + facesLength);
+//                        Log.e(TAG, "doInBackground: filename : "+ f.getName()+" scale : "+(1.0 + (j * 0.01))+", neighbour: "+(2+i)+" detected :"+faceDetections.toArray().length);
+//                        logReport.saveLog(f.getName(), Integer.toString(2+i), (1.0 + (j * 0.01)), Integer.toString(faceDetections.toArray().length));
 //
 //                        for (Rect rect : faceDetections.toArray()) {
 //                            Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
 //                                    new Scalar(0, 255, 0));
 //                        }
+
                         myProgress++;
-//
-////                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
-//                        publishProgress(myProgress * 100 / list.length);
+//                        Log.e(TAG, "doInBackground: train myProgress " + myProgress);
+
+//                        publishProgress(myProgress * 100 / (7*4*(100-1)));
+                        publishProgress(myProgress * 100 / list.length);
+
 ////                    rowItems.add(new RowItem(map));
 //
 //                        try {
@@ -679,7 +793,10 @@ public class LandingPage extends Activity {
 //                            e.printStackTrace();
 //                        }
 //
+
                     }
+//                    } // end for j
+//                    } // end for i
 
                     m_chosenDir = "";
 
@@ -687,7 +804,7 @@ public class LandingPage extends Activity {
                     Settings.getInstance().sync();
                     LocalNameList.getInstance().store();
 
-                    Log.e(TAG, "doInBackground: " + "saveLog to : " + logReport.fileLog.toString());
+//                    Log.e(TAG, "doInBackground: " + "saveLog to : " + logReport.fileLog.toString());
 
                 }
             } else {
@@ -717,10 +834,10 @@ public class LandingPage extends Activity {
 //                        Log.e(TAG, "doInBackground: Detected at Iter "+ (i+1) );
 
                 double a = 0;
+
                 for (int ii = 0; ii < 100; ii++) {
 
 //                    a = a + 0.01;
-
 //                        // Other
 //
 //                    Mat image = Highgui.imread(strDir);
@@ -737,9 +854,9 @@ public class LandingPage extends Activity {
 //                    faceDetector.detectMultiScale(imgray, faceDetections);
                     // 1.02
                     // 1.03
-                    faceDetector.detectMultiScale(imgray, faceDetections, 1.02 , 2, 2, new Size(faceSize, faceSize), new Size());
+                    faceDetector.detectMultiScale(imgray, faceDetections, 1.02, 2, 2, new Size(faceSize, faceSize), new Size());
 
-                    Log.e(TAG, "doInBackground: filename : "+ a +" detected :"+faceDetections.toArray().length);
+                    Log.e(TAG, "doInBackground: filename : " + a + " detected :" + faceDetections.toArray().length);
 
                     for (Rect rect : faceDetections.toArray()) {
                         Core.rectangle(imgray, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
@@ -790,5 +907,29 @@ public class LandingPage extends Activity {
             tv_percentage.setText(String.format("%s %%", values[0].toString()));
 //            Log.e(TAG, "onProgressUpdate: values " + values[0]);
         }
+
+        private void saveOutputImage(String fName, Mat image, MatOfRect faceDetections) {
+
+            // Create rectangle to existing face
+            for (Rect rect : faceDetections.toArray()) {
+                Core.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                        new Scalar(0, 255, 0));
+            }
+
+            String path = Environment.getExternalStorageDirectory().toString();
+            File dirLog = new File(path + "/OCVReportFR");
+
+            if (!dirLog.exists()) dirLog.mkdir();
+//                if (!fileLog.exists()) fileLog.createNewFile();
+
+
+            // Save Output OriImage+Rectangle
+//        File outDir = new File("");
+            String filename = dirLog + "/" + fName + "_o.png";
+            Log.e(TAG, "saveOutputImage: "+ String.format("Writing %s", filename));
+            Highgui.imwrite(filename, image);
+
+        }
+
     }
 }
